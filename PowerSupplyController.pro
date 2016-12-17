@@ -25,7 +25,12 @@ HEADERS += const_define.h mainwindow.h \
     cusdialog.h \
     actiondialog.h \
     dpustatus.h \
-    pcstatus.h
+    pcstatus.h \
+    recorderworker.h \
+    util.h \
+    parseworker.h \
+    autostate.h \
+    serialworker.h
 FORMS += mainwindow.ui \
     cusdialog.ui \
     actiondialog.ui
@@ -33,9 +38,14 @@ SOURCES += main.cpp mainwindow.cpp \
     cusdialog.cpp \
     actiondialog.cpp \
     dpustatus.cpp \
-    pcstatus.cpp
+    pcstatus.cpp \
+    recorderworker.cpp \
+    util.cpp \
+    parseworker.cpp \
+    autostate.cpp \
+    serialworker.cpp
 
-unix:!macx: LIBS += -L$$PWD/ -ljsoncpp
+unix:!macx: LIBS += -L$$PWD/ -ljsoncpp -lserial
 
 INCLUDEPATH += $$PWD/
 DEPENDPATH += $$PWD/

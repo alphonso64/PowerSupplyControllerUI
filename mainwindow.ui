@@ -127,7 +127,7 @@ border-color: rgb(0, 170, 0);
 gridline-color: rgb(112, 255, 129);</string>
     </property>
     <property name="currentIndex">
-     <number>1</number>
+     <number>2</number>
     </property>
     <widget class="QWidget" name="setPage">
      <widget class="QLabel" name="label_22">
@@ -719,7 +719,7 @@ color: rgb(255, 255, 255);</string>
 color: rgb(255, 255, 255);</string>
        </property>
        <property name="text">
-        <string>1500</string>
+        <string/>
        </property>
       </widget>
       <widget class="QLabel" name="displayPowerLabel">
@@ -742,7 +742,7 @@ color: rgb(255, 255, 255);</string>
 color: rgb(255, 255, 255);</string>
        </property>
        <property name="text">
-        <string>300</string>
+        <string/>
        </property>
       </widget>
       <widget class="QLabel" name="label_10">
@@ -857,7 +857,7 @@ color: rgb(255, 255, 255);</string>
 color: rgb(255, 255, 255);</string>
        </property>
        <property name="text">
-        <string>未报警</string>
+        <string/>
        </property>
       </widget>
       <widget class="QLabel" name="displayControlLabel">
@@ -880,7 +880,7 @@ color: rgb(255, 255, 255);</string>
 color: rgb(255, 255, 255);</string>
        </property>
        <property name="text">
-        <string>锁定</string>
+        <string/>
        </property>
       </widget>
       <widget class="QLabel" name="label_17">
@@ -907,7 +907,7 @@ color: rgb(139, 195, 74);</string>
        </property>
       </widget>
      </widget>
-     <widget class="QLineEdit" name="lineEdit_2">
+     <widget class="QLineEdit" name="fileNameEdit">
       <property name="geometry">
        <rect>
         <x>160</x>
@@ -956,12 +956,12 @@ QPushButton:pressed{background-color: rgba(0, 77, 64,  255);  border: 1px solid 
      </widget>
     </widget>
     <widget class="QWidget" name="autoPage">
-     <widget class="QLabel" name="label_30">
+     <widget class="QLabel" name="fileNameText">
       <property name="geometry">
        <rect>
-        <x>150</x>
+        <x>160</x>
         <y>45</y>
-        <width>291</width>
+        <width>191</width>
         <height>41</height>
        </rect>
       </property>
@@ -1013,7 +1013,7 @@ background-color: rgb(0, 150, 136);
 border: 2px solid rgb(0, 77, 64);
 border-radius:10px;}</string>
       </property>
-      <widget class="QLabel" name="label_42">
+      <widget class="QLabel" name="label_44">
        <property name="geometry">
         <rect>
          <x>20</x>
@@ -1059,7 +1059,7 @@ color: rgb(255, 255, 255);</string>
         <string>功率:</string>
        </property>
       </widget>
-      <widget class="QLabel" name="label_44">
+      <widget class="QLabel" name="displayTempLabel_2">
        <property name="geometry">
         <rect>
          <x>80</x>
@@ -1079,10 +1079,10 @@ color: rgb(255, 255, 255);</string>
 color: rgb(255, 255, 255);</string>
        </property>
        <property name="text">
-        <string>1500</string>
+        <string/>
        </property>
       </widget>
-      <widget class="QLabel" name="label_45">
+      <widget class="QLabel" name="displayPowerLabel_2">
        <property name="geometry">
         <rect>
          <x>80</x>
@@ -1102,7 +1102,7 @@ color: rgb(255, 255, 255);</string>
 color: rgb(255, 255, 255);</string>
        </property>
        <property name="text">
-        <string>300</string>
+        <string/>
        </property>
       </widget>
       <widget class="QLabel" name="label_46">
@@ -1197,7 +1197,7 @@ color: rgb(255, 255, 255);</string>
         <string>倒包控制：</string>
        </property>
       </widget>
-      <widget class="QLabel" name="label_50">
+      <widget class="QLabel" name="displayWarningLabel_2">
        <property name="geometry">
         <rect>
          <x>330</x>
@@ -1217,10 +1217,10 @@ color: rgb(255, 255, 255);</string>
 color: rgb(255, 255, 255);</string>
        </property>
        <property name="text">
-        <string>未报警</string>
+        <string/>
        </property>
       </widget>
-      <widget class="QLabel" name="label_51">
+      <widget class="QLabel" name="displayControlLabel_2">
        <property name="geometry">
         <rect>
          <x>330</x>
@@ -1240,7 +1240,7 @@ color: rgb(255, 255, 255);</string>
 color: rgb(255, 255, 255);</string>
        </property>
        <property name="text">
-        <string>锁定</string>
+        <string/>
        </property>
       </widget>
       <widget class="QLabel" name="label_52">
@@ -1302,57 +1302,11 @@ QGroupBox::title {
       <property name="alignment">
        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
       </property>
-      <widget class="QScrollArea" name="scrollArea">
+      <widget class="QPushButton" name="autoStartButton">
        <property name="geometry">
         <rect>
-         <x>270</x>
+         <x>30</x>
          <y>50</y>
-         <width>271</width>
-         <height>301</height>
-        </rect>
-       </property>
-       <property name="widgetResizable">
-        <bool>true</bool>
-       </property>
-       <widget class="QWidget" name="scrollAreaWidgetContents">
-        <property name="geometry">
-         <rect>
-          <x>0</x>
-          <y>0</y>
-          <width>269</width>
-          <height>299</height>
-         </rect>
-        </property>
-       </widget>
-      </widget>
-      <widget class="QScrollArea" name="scrollArea_2">
-       <property name="geometry">
-        <rect>
-         <x>640</x>
-         <y>50</y>
-         <width>211</width>
-         <height>301</height>
-        </rect>
-       </property>
-       <property name="widgetResizable">
-        <bool>true</bool>
-       </property>
-       <widget class="QWidget" name="scrollAreaWidgetContents_3">
-        <property name="geometry">
-         <rect>
-          <x>0</x>
-          <y>0</y>
-          <width>209</width>
-          <height>299</height>
-         </rect>
-        </property>
-       </widget>
-      </widget>
-      <widget class="QPushButton" name="manualButton_8">
-       <property name="geometry">
-        <rect>
-         <x>60</x>
-         <y>70</y>
          <width>111</width>
          <height>91</height>
         </rect>
@@ -1363,14 +1317,105 @@ QGroupBox::title {
          <pointsize>24</pointsize>
         </font>
        </property>
+       <property name="focusPolicy">
+        <enum>Qt::NoFocus</enum>
+       </property>
        <property name="styleSheet">
-        <string notr="true">QPushButton{background-color: rgba(84, 110, 122, 255);  border: 1px solid rgb(124, 124, 124); border-radius:5px;}
-QPushButton:checked{background-color: rgba(38, 166, 154, 255);  border: 1px solid rgb(124, 124, 124); border-radius:5px;}</string>
+        <string notr="true">QPushButton{background-color: rgba(38, 166, 154,  255);  border: 1px solid rgb(124, 124, 124); border-radius:5px;}
+QPushButton:disabled{background-color: rgba(84, 110, 122,  255);  border: 1px solid rgb(124, 124, 124); border-radius:5px;}
+QPushButton:pressed{background-color: rgba(0, 77, 64,  255);  border: 1px solid rgb(124, 124, 124); border-radius:5px;}</string>
        </property>
        <property name="text">
         <string>开始</string>
        </property>
       </widget>
+      <widget class="QListView" name="autoListView">
+       <property name="geometry">
+        <rect>
+         <x>200</x>
+         <y>50</y>
+         <width>281</width>
+         <height>311</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>14</pointsize>
+        </font>
+       </property>
+      </widget>
+      <widget class="QLabel" name="autoStageTimeText">
+       <property name="geometry">
+        <rect>
+         <x>530</x>
+         <y>90</y>
+         <width>151</width>
+         <height>41</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>微软雅黑</family>
+         <pointsize>18</pointsize>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">background-color: rgb(84, 110, 122);
+color: rgb(255, 255, 255);</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+      <widget class="QLabel" name="autoStageText">
+       <property name="geometry">
+        <rect>
+         <x>530</x>
+         <y>50</y>
+         <width>151</width>
+         <height>41</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>微软雅黑</family>
+         <pointsize>18</pointsize>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">background-color: rgb(84, 110, 122);
+color: rgb(255, 255, 255);</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QPushButton" name="openFileButton">
+      <property name="geometry">
+       <rect>
+        <x>380</x>
+        <y>45</y>
+        <width>101</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Sans</family>
+        <pointsize>14</pointsize>
+       </font>
+      </property>
+      <property name="focusPolicy">
+       <enum>Qt::NoFocus</enum>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QPushButton{background-color: rgba(38, 166, 154,  255);  border: 1px solid rgb(124, 124, 124); border-radius:5px;}
+QPushButton:pressed{background-color: rgba(0, 77, 64,  255);  border: 1px solid rgb(124, 124, 124); border-radius:5px;}</string>
+      </property>
+      <property name="text">
+       <string>打开</string>
+      </property>
      </widget>
     </widget>
     <widget class="QWidget" name="infoPage">

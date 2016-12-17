@@ -12,13 +12,13 @@ MAKEFILE      = Makefile
 
 CC            = gcc
 CXX           = g++
-DEFINES       = -DQT_NO_DEBUG -DQT_GUI_LIB -DQT_CORE_LIB
+DEFINES       = -DQT_NO_DEBUG -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CORE_LIB
 CFLAGS        = -pipe -O2 -Wall -W -D_REENTRANT -fPIE $(DEFINES)
 CXXFLAGS      = -pipe -O2 -Wall -W -D_REENTRANT -fPIE $(DEFINES)
-INCPATH       = -I/usr/lib/i386-linux-gnu/qt5/mkspecs/linux-g++ -I. -I. -isystem /usr/include/i386-linux-gnu/qt5 -isystem /usr/include/i386-linux-gnu/qt5/QtGui -isystem /usr/include/i386-linux-gnu/qt5/QtCore -I.
+INCPATH       = -I/usr/lib/i386-linux-gnu/qt5/mkspecs/linux-g++ -I. -I. -I. -isystem /usr/include/i386-linux-gnu/qt5 -isystem /usr/include/i386-linux-gnu/qt5/QtWidgets -isystem /usr/include/i386-linux-gnu/qt5/QtGui -isystem /usr/include/i386-linux-gnu/qt5/QtCore -I. -I. -I /tmp/usr/local/include/
 LINK          = g++
 LFLAGS        = -Wl,-O1
-LIBS          = $(SUBLIBS) -lQt5Gui -lQt5Core -lGL -lpthread 
+LIBS          = $(SUBLIBS) -L/home/tcc/PowerSupplyController/ -ljsoncpp  -lQt5Widgets -lQt5Gui -lQt5Core -lGL -lpthread  -L/tmp/usr/local/lib/ -lserial
 AR            = ar cqs
 RANLIB        = 
 QMAKE         = /usr/lib/i386-linux-gnu/qt5/bin/qmake
@@ -46,10 +46,38 @@ OBJECTS_DIR   = ./
 ####### Files
 
 SOURCES       = main.cpp \
-		mainwindow.cpp moc_mainwindow.cpp
+		mainwindow.cpp \
+		cusdialog.cpp \
+		actiondialog.cpp \
+		dpustatus.cpp \
+		pcstatus.cpp \
+		recorderworker.cpp \
+		util.cpp \
+		parseworker.cpp \
+		autostate.cpp \
+		serialworker.cpp moc_mainwindow.cpp \
+		moc_cusdialog.cpp \
+		moc_actiondialog.cpp \
+		moc_recorderworker.cpp \
+		moc_parseworker.cpp \
+		moc_serialworker.cpp
 OBJECTS       = main.o \
 		mainwindow.o \
-		moc_mainwindow.o
+		cusdialog.o \
+		actiondialog.o \
+		dpustatus.o \
+		pcstatus.o \
+		recorderworker.o \
+		util.o \
+		parseworker.o \
+		autostate.o \
+		serialworker.o \
+		moc_mainwindow.o \
+		moc_cusdialog.o \
+		moc_actiondialog.o \
+		moc_recorderworker.o \
+		moc_parseworker.o \
+		moc_serialworker.o
 DIST          = /usr/lib/i386-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		/usr/lib/i386-linux-gnu/qt5/mkspecs/common/shell-unix.conf \
 		/usr/lib/i386-linux-gnu/qt5/mkspecs/common/unix.conf \
@@ -98,13 +126,23 @@ DIST          = /usr/lib/i386-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		/usr/lib/i386-linux-gnu/qt5/mkspecs/features/resources.prf \
 		/usr/lib/i386-linux-gnu/qt5/mkspecs/features/moc.prf \
 		/usr/lib/i386-linux-gnu/qt5/mkspecs/features/unix/opengl.prf \
+		/usr/lib/i386-linux-gnu/qt5/mkspecs/features/uic.prf \
 		/usr/lib/i386-linux-gnu/qt5/mkspecs/features/unix/thread.prf \
 		/usr/lib/i386-linux-gnu/qt5/mkspecs/features/testcase_targets.prf \
 		/usr/lib/i386-linux-gnu/qt5/mkspecs/features/exceptions.prf \
 		/usr/lib/i386-linux-gnu/qt5/mkspecs/features/yacc.prf \
 		/usr/lib/i386-linux-gnu/qt5/mkspecs/features/lex.prf \
 		PowerSupplyController.pro main.cpp \
-		mainwindow.cpp
+		mainwindow.cpp \
+		cusdialog.cpp \
+		actiondialog.cpp \
+		dpustatus.cpp \
+		pcstatus.cpp \
+		recorderworker.cpp \
+		util.cpp \
+		parseworker.cpp \
+		autostate.cpp \
+		serialworker.cpp
 QMAKE_TARGET  = PowerSupplyController
 DESTDIR       = #avoid trailing-slash linebreak
 TARGET        = PowerSupplyController
@@ -134,7 +172,7 @@ first: all
 
 all: Makefile $(TARGET)
 
-$(TARGET):  $(OBJECTS)  
+$(TARGET): /home/tcc/PowerSupplyController/libjsoncpp.a ui_mainwindow.h ui_cusdialog.h ui_actiondialog.h $(OBJECTS)  
 	$(LINK) $(LFLAGS) -o $(TARGET) $(OBJECTS) $(OBJCOMP) $(LIBS)
 
 Makefile: PowerSupplyController.pro /usr/lib/i386-linux-gnu/qt5/mkspecs/linux-g++/qmake.conf /usr/lib/i386-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
@@ -185,12 +223,14 @@ Makefile: PowerSupplyController.pro /usr/lib/i386-linux-gnu/qt5/mkspecs/linux-g+
 		/usr/lib/i386-linux-gnu/qt5/mkspecs/features/resources.prf \
 		/usr/lib/i386-linux-gnu/qt5/mkspecs/features/moc.prf \
 		/usr/lib/i386-linux-gnu/qt5/mkspecs/features/unix/opengl.prf \
+		/usr/lib/i386-linux-gnu/qt5/mkspecs/features/uic.prf \
 		/usr/lib/i386-linux-gnu/qt5/mkspecs/features/unix/thread.prf \
 		/usr/lib/i386-linux-gnu/qt5/mkspecs/features/testcase_targets.prf \
 		/usr/lib/i386-linux-gnu/qt5/mkspecs/features/exceptions.prf \
 		/usr/lib/i386-linux-gnu/qt5/mkspecs/features/yacc.prf \
 		/usr/lib/i386-linux-gnu/qt5/mkspecs/features/lex.prf \
 		PowerSupplyController.pro \
+		/usr/lib/i386-linux-gnu/libQt5Widgets.prl \
 		/usr/lib/i386-linux-gnu/libQt5Gui.prl \
 		/usr/lib/i386-linux-gnu/libQt5Core.prl
 	$(QMAKE) -o Makefile PowerSupplyController.pro
@@ -242,12 +282,14 @@ Makefile: PowerSupplyController.pro /usr/lib/i386-linux-gnu/qt5/mkspecs/linux-g+
 /usr/lib/i386-linux-gnu/qt5/mkspecs/features/resources.prf:
 /usr/lib/i386-linux-gnu/qt5/mkspecs/features/moc.prf:
 /usr/lib/i386-linux-gnu/qt5/mkspecs/features/unix/opengl.prf:
+/usr/lib/i386-linux-gnu/qt5/mkspecs/features/uic.prf:
 /usr/lib/i386-linux-gnu/qt5/mkspecs/features/unix/thread.prf:
 /usr/lib/i386-linux-gnu/qt5/mkspecs/features/testcase_targets.prf:
 /usr/lib/i386-linux-gnu/qt5/mkspecs/features/exceptions.prf:
 /usr/lib/i386-linux-gnu/qt5/mkspecs/features/yacc.prf:
 /usr/lib/i386-linux-gnu/qt5/mkspecs/features/lex.prf:
 PowerSupplyController.pro:
+/usr/lib/i386-linux-gnu/libQt5Widgets.prl:
 /usr/lib/i386-linux-gnu/libQt5Gui.prl:
 /usr/lib/i386-linux-gnu/libQt5Core.prl:
 qmake: FORCE
@@ -257,7 +299,7 @@ qmake_all: FORCE
 
 dist: 
 	@test -d .tmp/PowerSupplyController1.0.0 || mkdir -p .tmp/PowerSupplyController1.0.0
-	$(COPY_FILE) --parents $(DIST) .tmp/PowerSupplyController1.0.0/ && $(COPY_FILE) --parents const_define.h mainwindow.h .tmp/PowerSupplyController1.0.0/ && $(COPY_FILE) --parents main.cpp mainwindow.cpp .tmp/PowerSupplyController1.0.0/ && (cd `dirname .tmp/PowerSupplyController1.0.0` && $(TAR) PowerSupplyController1.0.0.tar PowerSupplyController1.0.0 && $(COMPRESS) PowerSupplyController1.0.0.tar) && $(MOVE) `dirname .tmp/PowerSupplyController1.0.0`/PowerSupplyController1.0.0.tar.gz . && $(DEL_FILE) -r .tmp/PowerSupplyController1.0.0
+	$(COPY_FILE) --parents $(DIST) .tmp/PowerSupplyController1.0.0/ && $(COPY_FILE) --parents const_define.h mainwindow.h json/allocator.h json/assertions.h json/autolink.h json/config.h json/features.h json/forwards.h json/json.h json/reader.h json/value.h json/version.h json/writer.h cusdialog.h actiondialog.h dpustatus.h pcstatus.h recorderworker.h util.h parseworker.h autostate.h serialworker.h .tmp/PowerSupplyController1.0.0/ && $(COPY_FILE) --parents main.cpp mainwindow.cpp cusdialog.cpp actiondialog.cpp dpustatus.cpp pcstatus.cpp recorderworker.cpp util.cpp parseworker.cpp autostate.cpp serialworker.cpp .tmp/PowerSupplyController1.0.0/ && $(COPY_FILE) --parents mainwindow.ui cusdialog.ui actiondialog.ui .tmp/PowerSupplyController1.0.0/ && (cd `dirname .tmp/PowerSupplyController1.0.0` && $(TAR) PowerSupplyController1.0.0.tar PowerSupplyController1.0.0 && $(COMPRESS) PowerSupplyController1.0.0.tar) && $(MOVE) `dirname .tmp/PowerSupplyController1.0.0`/PowerSupplyController1.0.0.tar.gz . && $(DEL_FILE) -r .tmp/PowerSupplyController1.0.0
 
 
 clean:compiler_clean 
@@ -280,34 +322,221 @@ check: first
 
 compiler_rcc_make_all:
 compiler_rcc_clean:
-compiler_moc_header_make_all: moc_mainwindow.cpp
+compiler_moc_header_make_all: moc_mainwindow.cpp moc_cusdialog.cpp moc_actiondialog.cpp moc_recorderworker.cpp moc_parseworker.cpp moc_serialworker.cpp
 compiler_moc_header_clean:
-	-$(DEL_FILE) moc_mainwindow.cpp
+	-$(DEL_FILE) moc_mainwindow.cpp moc_cusdialog.cpp moc_actiondialog.cpp moc_recorderworker.cpp moc_parseworker.cpp moc_serialworker.cpp
 moc_mainwindow.cpp: const_define.h \
+		cusdialog.h \
+		pcstatus.h \
+		dpustatus.h \
+		recorderworker.h \
+		json/json.h \
+		json/autolink.h \
+		json/config.h \
+		json/version.h \
+		json/allocator.h \
+		json/value.h \
+		json/forwards.h \
+		json/reader.h \
+		json/features.h \
+		json/writer.h \
+		parseworker.h \
+		autostate.h \
+		serialworker.h \
 		mainwindow.h
-	/usr/lib/i386-linux-gnu/qt5/bin/moc $(DEFINES) -I/usr/lib/i386-linux-gnu/qt5/mkspecs/linux-g++ -I/root/QT/PowerSupplyController -I/root/QT/PowerSupplyController -I/usr/include/i386-linux-gnu/qt5 -I/usr/include/i386-linux-gnu/qt5/QtGui -I/usr/include/i386-linux-gnu/qt5/QtCore -I/usr/include/c++/4.9 -I/usr/include/i386-linux-gnu/c++/4.9 -I/usr/include/c++/4.9/backward -I/usr/lib/gcc/i586-linux-gnu/4.9/include -I/usr/local/include -I/usr/lib/gcc/i586-linux-gnu/4.9/include-fixed -I/usr/include/i386-linux-gnu -I/usr/include mainwindow.h -o moc_mainwindow.cpp
+	/usr/lib/i386-linux-gnu/qt5/bin/moc $(DEFINES) -I/usr/lib/i386-linux-gnu/qt5/mkspecs/linux-g++ -I/home/tcc/PowerSupplyController -I/home/tcc/PowerSupplyController -I/home/tcc/PowerSupplyController -I/usr/include/i386-linux-gnu/qt5 -I/usr/include/i386-linux-gnu/qt5/QtWidgets -I/usr/include/i386-linux-gnu/qt5/QtGui -I/usr/include/i386-linux-gnu/qt5/QtCore -I/usr/include/c++/4.9 -I/usr/include/i386-linux-gnu/c++/4.9 -I/usr/include/c++/4.9/backward -I/usr/lib/gcc/i586-linux-gnu/4.9/include -I/usr/local/include -I/usr/lib/gcc/i586-linux-gnu/4.9/include-fixed -I/usr/include/i386-linux-gnu -I/usr/include mainwindow.h -o moc_mainwindow.cpp
+
+moc_cusdialog.cpp: cusdialog.h
+	/usr/lib/i386-linux-gnu/qt5/bin/moc $(DEFINES) -I/usr/lib/i386-linux-gnu/qt5/mkspecs/linux-g++ -I/home/tcc/PowerSupplyController -I/home/tcc/PowerSupplyController -I/home/tcc/PowerSupplyController -I/usr/include/i386-linux-gnu/qt5 -I/usr/include/i386-linux-gnu/qt5/QtWidgets -I/usr/include/i386-linux-gnu/qt5/QtGui -I/usr/include/i386-linux-gnu/qt5/QtCore -I/usr/include/c++/4.9 -I/usr/include/i386-linux-gnu/c++/4.9 -I/usr/include/c++/4.9/backward -I/usr/lib/gcc/i586-linux-gnu/4.9/include -I/usr/local/include -I/usr/lib/gcc/i586-linux-gnu/4.9/include-fixed -I/usr/include/i386-linux-gnu -I/usr/include cusdialog.h -o moc_cusdialog.cpp
+
+moc_actiondialog.cpp: actiondialog.h
+	/usr/lib/i386-linux-gnu/qt5/bin/moc $(DEFINES) -I/usr/lib/i386-linux-gnu/qt5/mkspecs/linux-g++ -I/home/tcc/PowerSupplyController -I/home/tcc/PowerSupplyController -I/home/tcc/PowerSupplyController -I/usr/include/i386-linux-gnu/qt5 -I/usr/include/i386-linux-gnu/qt5/QtWidgets -I/usr/include/i386-linux-gnu/qt5/QtGui -I/usr/include/i386-linux-gnu/qt5/QtCore -I/usr/include/c++/4.9 -I/usr/include/i386-linux-gnu/c++/4.9 -I/usr/include/c++/4.9/backward -I/usr/lib/gcc/i586-linux-gnu/4.9/include -I/usr/local/include -I/usr/lib/gcc/i586-linux-gnu/4.9/include-fixed -I/usr/include/i386-linux-gnu -I/usr/include actiondialog.h -o moc_actiondialog.cpp
+
+moc_recorderworker.cpp: pcstatus.h \
+		const_define.h \
+		dpustatus.h \
+		json/json.h \
+		json/autolink.h \
+		json/config.h \
+		json/version.h \
+		json/allocator.h \
+		json/value.h \
+		json/forwards.h \
+		json/reader.h \
+		json/features.h \
+		json/writer.h \
+		recorderworker.h
+	/usr/lib/i386-linux-gnu/qt5/bin/moc $(DEFINES) -I/usr/lib/i386-linux-gnu/qt5/mkspecs/linux-g++ -I/home/tcc/PowerSupplyController -I/home/tcc/PowerSupplyController -I/home/tcc/PowerSupplyController -I/usr/include/i386-linux-gnu/qt5 -I/usr/include/i386-linux-gnu/qt5/QtWidgets -I/usr/include/i386-linux-gnu/qt5/QtGui -I/usr/include/i386-linux-gnu/qt5/QtCore -I/usr/include/c++/4.9 -I/usr/include/i386-linux-gnu/c++/4.9 -I/usr/include/c++/4.9/backward -I/usr/lib/gcc/i586-linux-gnu/4.9/include -I/usr/local/include -I/usr/lib/gcc/i586-linux-gnu/4.9/include-fixed -I/usr/include/i386-linux-gnu -I/usr/include recorderworker.h -o moc_recorderworker.cpp
+
+moc_parseworker.cpp: pcstatus.h \
+		const_define.h \
+		dpustatus.h \
+		json/json.h \
+		json/autolink.h \
+		json/config.h \
+		json/version.h \
+		json/allocator.h \
+		json/value.h \
+		json/forwards.h \
+		json/reader.h \
+		json/features.h \
+		json/writer.h \
+		autostate.h \
+		parseworker.h
+	/usr/lib/i386-linux-gnu/qt5/bin/moc $(DEFINES) -I/usr/lib/i386-linux-gnu/qt5/mkspecs/linux-g++ -I/home/tcc/PowerSupplyController -I/home/tcc/PowerSupplyController -I/home/tcc/PowerSupplyController -I/usr/include/i386-linux-gnu/qt5 -I/usr/include/i386-linux-gnu/qt5/QtWidgets -I/usr/include/i386-linux-gnu/qt5/QtGui -I/usr/include/i386-linux-gnu/qt5/QtCore -I/usr/include/c++/4.9 -I/usr/include/i386-linux-gnu/c++/4.9 -I/usr/include/c++/4.9/backward -I/usr/lib/gcc/i586-linux-gnu/4.9/include -I/usr/local/include -I/usr/lib/gcc/i586-linux-gnu/4.9/include-fixed -I/usr/include/i386-linux-gnu -I/usr/include parseworker.h -o moc_parseworker.cpp
+
+moc_serialworker.cpp: serialworker.h
+	/usr/lib/i386-linux-gnu/qt5/bin/moc $(DEFINES) -I/usr/lib/i386-linux-gnu/qt5/mkspecs/linux-g++ -I/home/tcc/PowerSupplyController -I/home/tcc/PowerSupplyController -I/home/tcc/PowerSupplyController -I/usr/include/i386-linux-gnu/qt5 -I/usr/include/i386-linux-gnu/qt5/QtWidgets -I/usr/include/i386-linux-gnu/qt5/QtGui -I/usr/include/i386-linux-gnu/qt5/QtCore -I/usr/include/c++/4.9 -I/usr/include/i386-linux-gnu/c++/4.9 -I/usr/include/c++/4.9/backward -I/usr/lib/gcc/i586-linux-gnu/4.9/include -I/usr/local/include -I/usr/lib/gcc/i586-linux-gnu/4.9/include-fixed -I/usr/include/i386-linux-gnu -I/usr/include serialworker.h -o moc_serialworker.cpp
 
 compiler_moc_source_make_all:
 compiler_moc_source_clean:
+compiler_uic_make_all: ui_mainwindow.h ui_cusdialog.h ui_actiondialog.h
+compiler_uic_clean:
+	-$(DEL_FILE) ui_mainwindow.h ui_cusdialog.h ui_actiondialog.h
+ui_mainwindow.h: mainwindow.ui
+	/usr/lib/i386-linux-gnu/qt5/bin/uic mainwindow.ui -o ui_mainwindow.h
+
+ui_cusdialog.h: cusdialog.ui
+	/usr/lib/i386-linux-gnu/qt5/bin/uic cusdialog.ui -o ui_cusdialog.h
+
+ui_actiondialog.h: actiondialog.ui
+	/usr/lib/i386-linux-gnu/qt5/bin/uic actiondialog.ui -o ui_actiondialog.h
+
 compiler_yacc_decl_make_all:
 compiler_yacc_decl_clean:
 compiler_yacc_impl_make_all:
 compiler_yacc_impl_clean:
 compiler_lex_make_all:
 compiler_lex_clean:
-compiler_clean: compiler_moc_header_clean 
+compiler_clean: compiler_moc_header_clean compiler_uic_clean 
 
 ####### Compile
 
 main.o: main.cpp mainwindow.h \
-		const_define.h
+		const_define.h \
+		cusdialog.h \
+		pcstatus.h \
+		dpustatus.h \
+		recorderworker.h \
+		json/json.h \
+		json/autolink.h \
+		json/config.h \
+		json/version.h \
+		json/allocator.h \
+		json/value.h \
+		json/forwards.h \
+		json/reader.h \
+		json/features.h \
+		json/writer.h \
+		parseworker.h \
+		autostate.h \
+		serialworker.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o main.cpp
 
-mainwindow.o: mainwindow.cpp 
+mainwindow.o: mainwindow.cpp ui_mainwindow.h \
+		json/json.h \
+		json/autolink.h \
+		json/config.h \
+		json/version.h \
+		json/allocator.h \
+		json/value.h \
+		json/forwards.h \
+		json/reader.h \
+		json/features.h \
+		json/writer.h \
+		actiondialog.h \
+		util.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o mainwindow.o mainwindow.cpp
+
+cusdialog.o: cusdialog.cpp cusdialog.h \
+		ui_cusdialog.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o cusdialog.o cusdialog.cpp
+
+actiondialog.o: actiondialog.cpp actiondialog.h \
+		ui_actiondialog.h \
+		util.h \
+		const_define.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o actiondialog.o actiondialog.cpp
+
+dpustatus.o: dpustatus.cpp dpustatus.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o dpustatus.o dpustatus.cpp
+
+pcstatus.o: pcstatus.cpp pcstatus.h \
+		const_define.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o pcstatus.o pcstatus.cpp
+
+recorderworker.o: recorderworker.cpp recorderworker.h \
+		pcstatus.h \
+		const_define.h \
+		dpustatus.h \
+		json/json.h \
+		json/autolink.h \
+		json/config.h \
+		json/version.h \
+		json/allocator.h \
+		json/value.h \
+		json/forwards.h \
+		json/reader.h \
+		json/features.h \
+		json/writer.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o recorderworker.o recorderworker.cpp
+
+util.o: util.cpp util.h \
+		const_define.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o util.o util.cpp
+
+parseworker.o: parseworker.cpp parseworker.h \
+		pcstatus.h \
+		const_define.h \
+		dpustatus.h \
+		json/json.h \
+		json/autolink.h \
+		json/config.h \
+		json/version.h \
+		json/allocator.h \
+		json/value.h \
+		json/forwards.h \
+		json/reader.h \
+		json/features.h \
+		json/writer.h \
+		autostate.h \
+		util.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o parseworker.o parseworker.cpp
+
+autostate.o: autostate.cpp autostate.h \
+		json/json.h \
+		json/autolink.h \
+		json/config.h \
+		json/version.h \
+		json/allocator.h \
+		json/value.h \
+		json/forwards.h \
+		json/reader.h \
+		json/features.h \
+		json/writer.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o autostate.o autostate.cpp
+
+serialworker.o: serialworker.cpp serialworker.h \
+		util.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o serialworker.o serialworker.cpp
 
 moc_mainwindow.o: moc_mainwindow.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_mainwindow.o moc_mainwindow.cpp
+
+moc_cusdialog.o: moc_cusdialog.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_cusdialog.o moc_cusdialog.cpp
+
+moc_actiondialog.o: moc_actiondialog.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_actiondialog.o moc_actiondialog.cpp
+
+moc_recorderworker.o: moc_recorderworker.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_recorderworker.o moc_recorderworker.cpp
+
+moc_parseworker.o: moc_parseworker.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_parseworker.o moc_parseworker.cpp
+
+moc_serialworker.o: moc_serialworker.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_serialworker.o moc_serialworker.cpp
 
 ####### Install
 

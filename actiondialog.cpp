@@ -1,23 +1,23 @@
 #include "actiondialog.h"
 #include "ui_actiondialog.h"
-
+#include <QStringListModel>
+#include "util.h"
+#include <QDebug>
+#include "const_define.h"
 ActionDialog::ActionDialog(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::ActionDialog)
 {
     ui->setupUi(this);
-}
+    QStringListModel *model = new QStringListModel(this);
+    model->setStringList( Util::getLocalFileList());
+    ui->listView->setModel(model);
 
-ActionDialog::ActionDialog(QString msg,int ID,QWidget *parent) :
-    QDialog(parent),
-    ui(new Ui::ActionDialog)
-{
-    ui->setupUi(this);
-    ui->label->setText(msg);
-    ui->label->setAlignment(Qt::AlignCenter);
-    flagID = ID;
-    connect(ui->doneButton, SIGNAL(clicked()),this, SLOT(exit()));
-    connect(ui->rejectButton, SIGNAL(clicked()),this, SLOT(exit()));
+    fileName = "";
+    filePath = "";
+
+    connect(ui->doneButton, SIGNAL(clicked()),this, SLOT(doneExit()));
+    connect(ui->rejectButton, SIGNAL(clicked()),this, SLOT(rejectExit()));
 }
 
 void ActionDialog::rejectExit()
@@ -27,7 +27,18 @@ void ActionDialog::rejectExit()
 
 void ActionDialog::doneExit()
 {
+    QModelIndexList list =ui->listView->selectionModel()->selectedIndexes();
+    if(list.size()>0)
+    {
+        qDebug() << list.at(0).data(Qt::DisplayRole ).toString();
+        fileName = list.at(0).data(Qt::DisplayRole ).toString();
+        filePath = PrePath + fileName;
+    }else{
+        fileName = "";
+        filePath = "";
+    }
     done(0);
+
 }
 
 ActionDialog::~ActionDialog()

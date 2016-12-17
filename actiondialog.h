@@ -13,7 +13,6 @@ class ActionDialog : public QDialog
 
 public:
     explicit ActionDialog(QWidget *parent = 0);
-    explicit ActionDialog(QString msg,int ID,QWidget *parent = 0);
     ~ActionDialog();
 
 private slots:
@@ -22,7 +21,9 @@ private slots:
 
 private:
     Ui::ActionDialog *ui;
-    int flagID;
+public:
+    QString filePath;
+    QString fileName;
 };
 
 #endif // ACTIONDIALOG_H

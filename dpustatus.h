@@ -5,15 +5,15 @@ class DpuStatus
 {
 public:
     DpuStatus();
-    int temp_a;
-    int temp_b;
-    int ua;
-    int ub;
-    int uc;
-    int ia;
-    int ib;
-    int ic;
-    int power;
+    unsigned int temp_a;
+    unsigned int temp_b;
+    unsigned int ua;
+    unsigned int ub;
+    unsigned int uc;
+    unsigned int ia;
+    unsigned int ib;
+    unsigned int ic;
+    unsigned int power;
     int errorcode;
 };
 
