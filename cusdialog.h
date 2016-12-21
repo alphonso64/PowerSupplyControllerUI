@@ -13,6 +13,7 @@ class CusDialog : public QDialog
 public:
     explicit CusDialog(QWidget *parent = 0);
     explicit CusDialog(QString msg,int type,QWidget *parent = 0);
+    void changeStyle(QString msg,int type);
     ~CusDialog();
 private slots:
     void doneExit();

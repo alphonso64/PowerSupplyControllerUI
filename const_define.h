@@ -15,6 +15,8 @@
 #define ActionCControl_TEXT "捞渣"
 #define ActionDControl_TEXT "搅拌"
 
+#define File_Saved_TEXT "文件已保存"
+
 #define Start_TEXT "开始"
 #define End_TEXT "停止"
 
@@ -33,6 +35,17 @@
 #define State_NO_Warning_TEXT  "未报警"
 #define State_Warning_TEXT  "报警"
 
-#define PrePath QString("/root/file/")
+#define PrePath QString("/root/program/file/")
+#define UDISK_PATH_PREFIX "/media/root/"
+#define UPDATE_TEMP_PATH "/root/program/temp/UpdateFile"
 
+#define UDISK_UNPLUGIN "未插入u盘"
+#define NO_UPDATE_FILE_DETECT "未检测到更新文件"
+
+#define UPDATE_PROCESSING "正在更新"
+#define UPDATE_END "更新完成，请重启机器"
+
+#define EMPTY_FILE "文件内容为空"
+
+#define REBOOT_CHECK "确定重启?"
 #endif // CONST_DEFINE_H

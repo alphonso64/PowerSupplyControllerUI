@@ -13,38 +13,30 @@
 #include <fcntl.h>
 #include <const_define.h>
 #include <QDir>
+#include <sys/sendfile.h>
 typedef std::multimap<time_t, std::string> result_set_t;
 
 Util::Util()
 {
 }
 
+void Util::list_ports()
+{
+    vector<serial::PortInfo> devices_found = serial::list_ports();
+
+    vector<serial::PortInfo>::iterator iter = devices_found.begin();
+
+    while( iter != devices_found.end() )
+    {
+        serial::PortInfo device = *iter++;
+
+        printf( "(%s, %s, %s)\n", device.port.c_str(), device.description.c_str(),
+        device.hardware_id.c_str() );
+    }
+}
+
 QStringList Util::getLocalFileList()
 {
-//    QStringList list;
-//    DIR    *dir;
-//    struct    dirent    *ptr;
-//    dir = opendir(PrePath.toStdString().c_str()); ///open the dir
-//    result_set_t res_set;
-//    while((ptr = readdir(dir)) != NULL) ///read the list of this dir
-//    {
-//        std::string name(ptr->d_name);
-//        std::string path = QString(PrePath+name.c_str()).toStdString();
-//        struct stat buf;
-//        stat(path.c_str(), &buf);
-//        if(buf.st_size>0)
-//        {
-//            res_set.insert(result_set_t::value_type(buf.st_mtime,name));
-//        }
-//    }
-//    std::multimap<time_t, std::string>::reverse_iterator   i, iend;
-//    iend = res_set.rend();
-//    for (i=res_set.rbegin(); i!=iend; ++i)
-//    {
-//        list.push_back(((std::string)((*i).second)).c_str());
-//    }
-//    closedir(dir);
-//    return list;
 
     QDir dir(PrePath);
     dir.setFilter(QDir::Files | QDir::Hidden | QDir::NoSymLinks);
@@ -68,4 +60,130 @@ QString Util::readFile(QString path)
 
     QTextStream input(&f);
     return input.readAll();
+}
+
+void Util::fileSync(const char *file)
+{
+    int fd =  open( file, O_RDWR);
+    if(fd != -1)
+    {
+        syncfs(fd);
+        close(fd);
+    }
+}
+
+int Util::get_file_size(FILE *file)
+{
+    int size = 0;
+    fseek(file, 0L, SEEK_END);
+    size = ftell(file);
+    fseek(file, 0L, SEEK_SET);
+    return size;
+}
+
+void Util::cpyFile(const char *src, const char *dst)
+{
+	 int read_fd;
+	 int write_fd;
+	 struct stat stat_buf;
+	 off_t offset = 0;
+
+	 /* Open the input file. */
+	 read_fd = open (src, O_RDONLY);
+	 /* Stat the input file to obtain its size. */
+	 fstat (read_fd, &stat_buf);
+	 /* Open the output file for writing, with the same permissions as the
+	   source file. */
+	 write_fd = open (dst, O_WRONLY | O_CREAT, stat_buf.st_mode);
+	 /* Blast the bytes from one file to the other. */
+	 sendfile (write_fd, read_fd, &offset, stat_buf.st_size);
+	 /* Close up. */
+	 close (read_fd);
+	 close (write_fd);
+	 
+	 chmod(dst,S_IRUSR|S_IWUSR|S_IXUSR|S_IRGRP|S_IWGRP|S_IROTH|S_IWOTH|S_IXOTH);
+}
+
+QString Util::checkUDiskPath()
+{
+    DIR    *dir;
+    struct    dirent    *ptr;
+    dir = opendir(UDISK_PATH_PREFIX); ///open the dir
+    QString pattern_a("\\.");
+    QString pattern_b("\\.\\.");
+    QRegExp rx_a(pattern_a);
+    QRegExp rx_b(pattern_b);
+
+    while((ptr = readdir(dir)) != NULL) ///read the list of this dir
+    {
+        if(ptr->d_type == 4)
+        {
+            {
+                if(!rx_a.exactMatch(ptr->d_name))
+                {
+                    if(!rx_b.exactMatch(ptr->d_name))
+                    {
+                        closedir(dir);
+                        return QString(ptr->d_name);
+                    }
+                }
+            }
+        }
+    }
+    closedir(dir);
+    return NULL;
+}
+
+QString Util::checkUpdatePath(QString udiskPath)
+{
+    DIR    *dir;
+    struct    dirent    *ptr;
+    dir = opendir(udiskPath.toStdString().c_str()); ///open the dir
+    if(dir==NULL){
+        return NULL;
+    }
+    QString pattern("PowerSupplyController");
+    QRegExp rx(pattern);
+
+    while((ptr = readdir(dir)) != NULL) ///read the list of this dir
+    {
+        //if(ptr->d_type == 4)
+        {
+            qDebug()<<ptr->d_name;
+            if(rx.exactMatch(ptr->d_name))
+            {
+                closedir(dir);
+                return QString(ptr->d_name);
+            }
+        }
+    }
+    closedir(dir);
+    return NULL;
+}
+
+QString Util::checkFirmWareUpdatePath(QString udiskPath)
+{
+    DIR    *dir;
+    struct    dirent    *ptr;
+    dir = opendir(udiskPath.toStdString().c_str()); ///open the dir
+    if(dir==NULL){
+        return NULL;
+    }
+    QString pattern("Robos.bin");
+    QRegExp rx(pattern);
+
+    while((ptr = readdir(dir)) != NULL) ///read the list of this dir
+    {
+        //if(ptr->d_type == 4)
+        {
+            qDebug()<<ptr->d_name;
+            if(rx.exactMatch(ptr->d_name))
+            {
+                closedir(dir);
+                return QString(ptr->d_name);
+            }
+        }
+    }
+    closedir(dir);
+    return NULL;
 }

@@ -29,7 +29,8 @@ public:
     DpuStatus *dpuStatus;
     QMutex m_lock;
     QString fileName;
-
+signals:
+    void fileRecorded();
 private:
     Json::Value *root;
 

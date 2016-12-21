@@ -12,6 +12,8 @@
 #include "recorderworker.h"
 #include "parseworker.h"
 #include "serialworker.h"
+#include "errorpage.h"
+#include "filecopyer.h"
 #if _MSC_VER >= 1600
 #pragma execution_character_set("utf-8")
 #endif
@@ -31,7 +33,6 @@ public:
 
 
 private slots:
-    void groupButtonClick(int);
     void actionGroupButtonClick(int);
     void setPowerValue(int);
     void manualStartClick(bool);
@@ -42,6 +43,15 @@ private slots:
     void fileOpen();
     void fileParsed();
     void autoProcess();
+    void fileRecorded();
+    void setButtonClick();
+    void manualButtonClick();
+    void autoButtonClick();
+    void infoButtonClick();
+    void errorHandle(int);
+    void softUpdateButtonClick();
+    void restartButtonClick();
+    void firmwarepdateButtonClick();
 
 private:
     void uiInit();
@@ -52,7 +62,6 @@ signals:
 
 private:
     Ui::MainWindow *ui;
-    QButtonGroup *group;
     QButtonGroup *group_manual;
     QTime time;
     QTime autotime;
@@ -69,8 +78,12 @@ private:
     RecorderWorker *recorder;
     ParseWorker *parser;
     SerialWorker *serialWorker;
+    FileCopyer *copyer;
 
     AutoState autostate;
+    ErrorPage *errorPage;
+
+    int auto_index;
 
     static const int setBtnID = 1;
     static const int manualBtnID = 2;

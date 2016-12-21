@@ -13,6 +13,8 @@ ActionDialog::ActionDialog(QWidget *parent) :
     model->setStringList( Util::getLocalFileList());
     ui->listView->setModel(model);
 
+    this->setWindowFlags(Qt::Tool | Qt::WindowStaysOnTopHint |Qt::X11BypassWindowManagerHint);
+    this->move(192,144);
     fileName = "";
     filePath = "";
 
