@@ -1,6 +1,11 @@
 ﻿#ifndef CONST_DEFINE_H
 #define CONST_DEFINE_H
 
+#define COM1 "/dev/ttyS1"
+#define COM2 "/dev/ttyS3"
+#define COM5 "/dev/ttyS0"
+#define COM6 "/dev/ttyS2"
+
 #define ActionState_UNDO 150
 #define ActionState_DONE 151
 

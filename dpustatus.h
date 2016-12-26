@@ -5,8 +5,8 @@ class DpuStatus
 {
 public:
     DpuStatus();
-    unsigned int temp_a;
-    unsigned int temp_b;
+    int temp_a;
+    int temp_b;
     unsigned int ua;
     unsigned int ub;
     unsigned int uc;

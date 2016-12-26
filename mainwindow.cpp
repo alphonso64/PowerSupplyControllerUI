@@ -8,7 +8,7 @@
 #include "util.h"
 #include <QStringListModel>
 
-#define SoftWare_Version "V0.5"
+#define SoftWare_Version "V1.0"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -23,7 +23,9 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->manualStartButton->setCheckable(true);
     ui->recordStartButton->setCheckable(true);
 
-    //this->setWindowFlags(Qt::CustomizeWindowHint);
+    this->setWindowFlags(Qt::CustomizeWindowHint);
+	
+	Util::deleteUnpluedUdiskPath();
 
     group_manual = new QButtonGroup(this);
     group_manual->addButton(ui->manualactionAButton,manualAID);
@@ -142,10 +144,21 @@ void MainWindow::firmwarepdateButtonClick()
         cusdialog.exec();
         return;
     }
+	
+    QString file_name_ = Util::checkFirmWareUpdatePath_(path);
+    if(file_name_ == NULL)
+    {
+        CusDialog cusdialog(NO_UPDATE_FILE_DETECT,1);
+        cusdialog.exec();
+        return;
+    }
     //CusDialog cusdialog(UPDATE_PROCESSING,3);
-
+	CusDialog cusdialog(UPDATE_PROCESSING,3);
+	serialWorker->cusdialog = &cusdialog;
     serialWorker->updateFirmWareFlag = true;
     serialWorker->path = QString(path+"/"+file_name);
+	serialWorker->path_ = QString(path+"/"+file_name_);
+	cusdialog.exec();
     //cusdialog.exec();
 }
 

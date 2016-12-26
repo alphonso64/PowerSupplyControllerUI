@@ -169,7 +169,74 @@ QString Util::checkFirmWareUpdatePath(QString udiskPath)
     if(dir==NULL){
         return NULL;
     }
-    QString pattern("Robos.bin");
+    QString pattern("Robos0.bin");
+    QRegExp rx(pattern);
+
+    while((ptr = readdir(dir)) != NULL) ///read the list of this dir
+    {
+        //if(ptr->d_type == 4)
+        {
+            qDebug()<<ptr->d_name;
+            if(rx.exactMatch(ptr->d_name))
+            {
+                closedir(dir);
+                return QString(ptr->d_name);
+            }
+        }
+    }
+    closedir(dir);
+    return NULL;
+}
+
+void Util::deleteUnpluedUdiskPath()
+{
+    DIR    *dir;
+    struct    dirent    *ptr;
+    dir = opendir(UDISK_PATH_PREFIX);
+    QString path_pre = QString(UDISK_PATH_PREFIX);
+    QString pattern_a("\\.");
+    QString pattern_b("\\.\\.");
+    QRegExp rx_a(pattern_a);
+    QRegExp rx_b(pattern_b);
+    while((ptr = readdir(dir)) != NULL) ///read the list of this dir
+    {
+        if(ptr->d_type == 4)
+        {
+
+            if(!rx_a.exactMatch(ptr->d_name))
+            {
+                if(!rx_b.exactMatch(ptr->d_name))
+                {
+                    QString path = QString(path_pre+ptr->d_name);
+                    struct stat buf;
+                    int res  = stat(path.toStdString().c_str(), &buf);
+                    if(res == 0)
+                    {
+                        if(buf.st_uid != 1000)
+                        {
+                            QString cmd("sudo rm -rf "+path_pre+"\""+ptr->d_name+"\"");
+                            system(cmd.toStdString().c_str());
+                        }
+                    }
+
+
+                }
+            }
+        }
+    }
+
+    closedir(dir);
+}
+
+QString Util::checkFirmWareUpdatePath_(QString udiskPath)
+{
+    DIR    *dir;
+    struct    dirent    *ptr;
+    dir = opendir(udiskPath.toStdString().c_str()); ///open the dir
+    if(dir==NULL){
+        return NULL;
+    }
+    QString pattern("Robos1.bin");
     QRegExp rx(pattern);
 
     while((ptr = readdir(dir)) != NULL) ///read the list of this dir

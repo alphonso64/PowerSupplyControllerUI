@@ -5,18 +5,19 @@
 class FirmWare
 {
 public:
-    FirmWare(QString path);
+    FirmWare(QString path,QString path_);
     ~FirmWare();
 
     int getSendSize();
     int getFileSize();
     char* getSendTemp();
     int packgeNum();
-    void setPackage(int packge);
+    void setPackage(int packge,int version);
     void setStart();
 
 private:
     char *fileSrc;
+    char *fileSrc_;
     int totalPackage;
     int currenPackge;
     int fileSize;

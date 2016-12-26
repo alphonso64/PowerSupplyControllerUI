@@ -4,6 +4,7 @@
 #include "dpustatus.h"
 #include "pcstatus.h"
 #include "firmware.h"
+#include "cusdialog.h"
 class SerialWorker : public QThread
 {
     Q_OBJECT
@@ -16,7 +17,9 @@ public:
 	DpuStatus *dpuStatus;
 	PcStatus *pcStatus;
     QString path;
+	QString path_;
     bool updateFirmWareFlag;
+	CusDialog *cusdialog;
 protected:
     void run();
 signals:
@@ -27,6 +30,7 @@ private:
     int updateFirmWareState;
     FirmWare *firmWare;
     bool dataParse(QByteArray *array,DpuStatus *dpuStatus);
-    bool updateDataParse(QByteArray *array,unsigned int *package,unsigned int *state);
+    bool updateDataParse(QByteArray *array,unsigned int *package,unsigned int *state,unsigned int *version);
+    bool checksumValidate(QByteArray *data, int offset,int len, unsigned int checksum);
 };
 #endif // SERIALWORKER_H

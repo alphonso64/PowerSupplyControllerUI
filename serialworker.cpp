@@ -7,7 +7,7 @@
 void SerialWorker::run()
 {
 	Util::list_ports();
-	serial::Serial my_serial("/dev/ttyS0", 115200, serial::Timeout::simpleTimeout(2000));
+    serial::Serial my_serial(COM6, 115200, serial::Timeout::simpleTimeout(2000));
 	if(my_serial.isOpen())
         qDebug()<<"has open";
 	else
@@ -34,34 +34,37 @@ void SerialWorker::run()
         {
             if(updateFirmWareState == 0)
             {
-                sleep(0.5);
+				my_serial.flushOutput();
+                sleep(2);
                 if(firmWare!=NULL){
                     delete firmWare;
                 }
-                firmWare = new FirmWare(path);
+                firmWare = new FirmWare(path,path_);
+				qDebug()<<path<<path_;
                 firmWare->setStart();
                 qDebug()<<"setStart"<<firmWare->getSendSize()<<" "<<firmWare->getFileSize();
                 my_serial.write((uint8_t *)firmWare->getSendTemp(),firmWare->getSendSize());
                 updateFirmWareState = 1;
             }else
             {
-                char  temp[14];
-                int bytes_wrote = my_serial.read((uint8_t *)temp,14);
+                char  temp[16];
+                int bytes_wrote = my_serial.read((uint8_t *)temp,16);
                 QByteArray val((char *)temp,bytes_wrote);
                 array.append(val);
                 unsigned int state = 0;
                 unsigned int package =  0;
-                while(updateDataParse(&array,&package,&state)){
+                unsigned int version =  0;
+                while(updateDataParse(&array,&package,&state,&version)){
                 }
-//				qDebug()<<"updateDataParse "<<package<<"state "<<state;
                 if(state == 1){
-					qDebug()<<"updateDataParse "<<package<<"size "<<firmWare->getSendSize();
-                    firmWare->setPackage(package);
+					firmWare->setPackage(package,version);
+                    qDebug()<<"updateDataParse "<<package<<" size "<<firmWare->getSendSize()<<" version"<<version;
                     my_serial.write((uint8_t *)firmWare->getSendTemp(),firmWare->getSendSize());
                 }else if(state == 2){
 					qDebug()<<"update done";
 					updateFirmWareFlag = false;
 					updateFirmWareState =0;
+					cusdialog->changeStyle(UPDATE_END,1);
 				}
 
             }
@@ -137,25 +140,46 @@ bool SerialWorker::dataParse(QByteArray *array,DpuStatus *dpuStatus)
 	return flag;
 }
 
-bool SerialWorker::updateDataParse(QByteArray *array,unsigned int *package,unsigned int *state)
+bool SerialWorker::updateDataParse(QByteArray *array,unsigned int *package,unsigned int *state,unsigned int *version)
 {
     bool flag = false;
     for(int i=0;i<array->length()-4;i++)
     {
         if(array->at(i) == 0x6a && array->at(i+1) == 0x5a)
         {
-            int len = (array->at(i+3)<<8) + array->at(i+2) + 8;
+            int datelen = (array->at(i+3)<<8) + array->at(i+2);
+            int len = datelen + 8;
             if((len + i) > array->length())
             {
                 break;
             }else{
-                *state = ((uint8_t)array->at(i+5)<<8) + (uint8_t)array->at(i+4);
-                *package = ((uint8_t)array->at(i+9)<<24)+ ((uint8_t)array->at(i+8)<<16) + ((uint8_t)array->at(i+7)<<8) + (uint8_t)array->at(i+6);
-                array->remove(0,i+len);
-                flag = true;
-                break;
+                unsigned int checksum = ((uint8_t)array->at(datelen+7)<<24)+ ((uint8_t)array->at(datelen+6)<<16) + ((uint8_t)array->at(datelen+5)<<8) + (uint8_t)array->at(datelen+4);
+				
+                if(checksumValidate(array,0,datelen+4,checksum))
+				{
+                    *state = ((uint8_t)array->at(i+5)<<8) + (uint8_t)array->at(i+4);
+                    *version = ((uint8_t)array->at(i+7)<<8) + (uint8_t)array->at(i+6);
+                    *package = ((uint8_t)array->at(i+11)<<24)+ ((uint8_t)array->at(i+10)<<16) + ((uint8_t)array->at(i+9)<<8) + (uint8_t)array->at(i+8);
+                    array->remove(0,i+len);
+                    flag = true;
+                    break;
+                }
+				array->remove(0,i+len);
             }
         }
     }
+    return flag;
+}
+
+bool SerialWorker::checksumValidate(QByteArray *data, int offset,int len, unsigned int checksum)
+{
+    bool flag = false;
+    unsigned int sum = 0;
+    for(int i=0;i<len;i++){
+        sum = sum + (uint8_t(data->at(i+offset)));
+    }
+	//qDebug()<<"sum"<<sum<<" checksum"<<checksum;
+    if(sum == checksum)
+        flag = true;
     return flag;
 }

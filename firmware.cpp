@@ -1,10 +1,10 @@
 #include "firmware.h"
-
+#include <QDebug>
 #define PACKGE_SIZE 512
 
-FirmWare::FirmWare(QString path)
+FirmWare::FirmWare(QString path,QString path_)
 {
-
+    sendTemp = new char[1024];
     FILE *fp = fopen(path.toStdString().c_str(), "rb+");
     if(NULL == fp)
     {
@@ -19,8 +19,24 @@ FirmWare::FirmWare(QString path)
     totalPackage = fileSize/PACKGE_SIZE + 1;
     currenPackge = 0;
     fileSrc = new char[fileSize];
-    sendTemp = new char[1024];
     fread (fileSrc,1,fileSize,fp) ;
+    fclose(fp);
+
+    fp = fopen(path_.toStdString().c_str(), "rb+");
+    if(NULL == fp)
+    {
+        return ;
+    }
+    fileSize = Util::get_file_size(fp) ;
+    if(fileSize == 0)
+    {
+        return ;
+    }
+    sendSize = 0;
+    totalPackage = fileSize/PACKGE_SIZE + 1;
+    currenPackge = 0;
+    fileSrc_ = new char[fileSize];
+    fread (fileSrc_,1,fileSize,fp) ;
     fclose(fp);
 }
 
@@ -44,10 +60,10 @@ int FirmWare::getFileSize()
     return fileSize;
 }
 
-void FirmWare::setPackage(int packge)
+void FirmWare::setPackage(int packge,int version)
 {
     currenPackge = packge;
-    int size;
+    int size = 0;
     if(packge < totalPackage-1)
     {
         size = PACKGE_SIZE;
@@ -68,12 +84,24 @@ void FirmWare::setPackage(int packge)
     sendTemp[7] = (currenPackge>>8) & 0xff;
     sendTemp[8] = (currenPackge>>16) & 0xff;
     sendTemp[9] = (currenPackge>>24) & 0xff;
-    memcpy(sendTemp+10, fileSrc + currenPackge * PACKGE_SIZE, size);
+    if(version == 0){
+        memcpy(sendTemp+10, fileSrc + currenPackge * PACKGE_SIZE, size);
+    }else if(version == 1){
+        memcpy(sendTemp+10, fileSrc_ + currenPackge * PACKGE_SIZE, size);
+    }
+	//memcpy(sendTemp+10, fileSrc + currenPackge * PACKGE_SIZE, size);	
     int offset = 10+size;
-    sendTemp[offset] = 0xff;
-    sendTemp[offset+1] = 0xff;
-    sendTemp[offset+2] = 0xff;
-    sendTemp[offset+3] = 0xff;
+    unsigned int checksum = 0;
+    for(int i=4;i<offset;i++)
+    {
+        checksum = checksum + ((uint8_t)sendTemp[i]);
+    }
+	// qDebug()<<"packge"<<packge<<""<<"size"<<size;
+    sendTemp[offset] = checksum & 0xff;
+    sendTemp[offset+1] = (checksum>>8) & 0xff;
+    sendTemp[offset+2] = (checksum>>16) & 0xff;
+    sendTemp[offset+3] = (checksum>>24) & 0xff;
+
     sendSize = size+14;
 }
 
@@ -81,7 +109,7 @@ void FirmWare::setStart()
 {
     sendTemp[0] = 0x68;
     sendTemp[1] = 0x5a;
-    sendTemp[2] = 0x10;
+    sendTemp[2] = 0x0C;
     sendTemp[3] = 0;
 
 
@@ -100,16 +128,18 @@ void FirmWare::setStart()
     sendTemp[14] = 0;
     sendTemp[15] = 0;
 
-    sendTemp[16] = 0;
-    sendTemp[17] = 0;
-    sendTemp[18] = 0;
-    sendTemp[19] = 0;
 
-    sendTemp[20] = 0xff;
-    sendTemp[21] = 0xff;
-    sendTemp[22] = 0xff;
-    sendTemp[23] = 0xff;
-    sendSize = 24;
+    unsigned int checksum = 0;
+    for(int i=0;i<16;i++)
+    {
+        checksum = checksum + ((uint8_t)sendTemp[i]);
+    }
+    sendTemp[16] = checksum & 0xff;
+    sendTemp[17] = (checksum>>8) & 0xff;
+    sendTemp[18] = (checksum>>16) & 0xff;
+    sendTemp[19] = (checksum>>24) & 0xff;
+    sendSize = 20;
+	// qDebug()<<"totalPackage"<<totalPackage;
 
 }
 
@@ -122,5 +152,9 @@ FirmWare::~FirmWare()
     if(fileSrc != NULL){
         delete fileSrc;
         fileSrc = NULL;
+    }
+    if(fileSrc_ != NULL){
+        delete fileSrc_;
+        fileSrc_ = NULL;
     }
 }

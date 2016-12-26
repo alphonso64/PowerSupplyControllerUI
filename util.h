@@ -18,8 +18,8 @@ public:
     static QString checkUDiskPath();
     static QString checkUpdatePath(QString udiskPath);
     static QString checkFirmWareUpdatePath(QString udiskPath);
-
-
+	static QString checkFirmWareUpdatePath_(QString udiskPath);
+	static void deleteUnpluedUdiskPath();
 
 };
 
