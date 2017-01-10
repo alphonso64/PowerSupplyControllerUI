@@ -8,7 +8,7 @@
 #include "util.h"
 #include <QStringListModel>
 
-#define SoftWare_Version "V1.0"
+#define SoftWare_Version "V1.1"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -86,9 +86,30 @@ void MainWindow::fileRecorded()
 void MainWindow::errorHandle(int flag)
 {
     if(flag == 1){
+        if(autoStartFlag){
+            if(auto_CusDialog!=NULL){
+                auto_CusDialog->done(-1);
+            }
+            ui->autoStartButton->setText(Start_TEXT);
+            autoStartFlag = false;
+            autotimer->stop();
+            autostate.cnt = 0;
+            autostate.currenIndex = 0;
+            ui->autoStageText->setText("");
+            ui->autoStageTimeText->setText("");
+            auto_index--;
+            ui->autoIndexText->setText("已完成"+QString::number(auto_index)+"炉");
+            QStringListModel *model =(QStringListModel *)  ui->autoListView->model();
+            QModelIndex indexFromModelB = model->index(autostate.currenIndex, 0);
+            ui->autoListView->setCurrentIndex(indexFromModelB);
+
+        }
         errorPage->show();
     }else if(flag == 0){
+        pcStatus.powerlevel = 0;
+        ui->powerSlider->setValue(0);
         errorPage->hide();
+
     }
 }
 
@@ -328,26 +349,68 @@ void MainWindow::autoProcess()
         State state = autostate.stage.at(autostate.currenIndex);
         if(state.actionID == ActionAControl){
              CusDialog cusDialog(ActionAControl_TEXT,1);
+             auto_CusDialog = &cusDialog;
              pcStatus.warningControl = true;
-             cusDialog.exec();
-             pcStatus.warningControl = false;
+             if(0 == cusDialog.exec())
+              {
+                 auto_CusDialog = NULL;
+                 pcStatus.warningControl = false;
+                 qDebug()<<"done";
+              }else{
+                 auto_CusDialog = NULL;
+                 pcStatus.warningControl = false;
+                 qDebug()<<"reject";
+                 return;
+             }
+
         }else if(state.actionID  == ActionBControl){
             CusDialog cusDialog(ActionBControl_TEXT,1);
+            auto_CusDialog = &cusDialog;
             pcStatus.warningControl = true;
             pcStatus.toppleControl = true;
-            cusDialog.exec();
-            pcStatus.warningControl = false;
-            pcStatus.toppleControl = false;
+            if(0 == cusDialog.exec())
+             {
+                auto_CusDialog = NULL;
+                pcStatus.warningControl = false;
+                pcStatus.toppleControl = false;
+                qDebug()<<"done";
+             }else{
+                auto_CusDialog = NULL;
+                pcStatus.warningControl = false;
+                pcStatus.toppleControl = false;
+                qDebug()<<"reject";
+                return;
+            }
         }else if(state.actionID  == ActionCControl){
             CusDialog cusDialog(ActionCControl_TEXT,1);
+            auto_CusDialog = &cusDialog;
             pcStatus.warningControl = true;
-            cusDialog.exec();
-            pcStatus.warningControl = false;
+            if(0 == cusDialog.exec())
+             {
+                auto_CusDialog = NULL;
+                pcStatus.warningControl = false;
+                qDebug()<<"done";
+             }else{
+                auto_CusDialog = NULL;
+                pcStatus.warningControl = false;
+                qDebug()<<"reject";
+                return;
+            }
         }else if(state.actionID  == ActionDControl){
             CusDialog cusDialog(ActionDControl_TEXT,1);
+            auto_CusDialog = &cusDialog;
             pcStatus.warningControl = true;
-            cusDialog.exec();
-            pcStatus.warningControl = false;
+            if(0 == cusDialog.exec())
+             {
+                auto_CusDialog = NULL;
+                pcStatus.warningControl = false;
+                qDebug()<<"done";
+             }else{
+                auto_CusDialog = NULL;
+                pcStatus.warningControl = false;
+                qDebug()<<"reject";
+                return;
+            }
         }
         autostate.currenIndex++;
         if(autostate.currenIndex<autostate.stage.size()){
@@ -411,12 +474,18 @@ void MainWindow::timerOut()
 
 void MainWindow::display()
 {
-//    dpuStatus.power++;
     ui->displayPowerLabel->setText(QString::number(dpuStatus.power));
     ui->displayTempLabel->setText(QString::number(dpuStatus.temp_a));
 
     ui->displayPowerLabel_2->setText(QString::number(dpuStatus.power));
     ui->displayTempLabel_2->setText(QString::number(dpuStatus.temp_a));
+
+    ui->displayVoltageLabel->setText(QString::number(dpuStatus.ua));
+    ui->displayCurrentLabel->setText(QString::number(dpuStatus.ia));
+
+    ui->displayVoltageLabel_2->setText(QString::number(dpuStatus.ua));
+    ui->displayCurrentLabel_2->setText(QString::number(dpuStatus.ia));
+
     if(pcStatus.toppleControl){
        ui->displayControlLabel->setText(State_UNLOCK_TEXT) ;
        ui->displayControlLabel_2->setText(State_UNLOCK_TEXT) ;

@@ -30,8 +30,6 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
-
-
 private slots:
     void actionGroupButtonClick(int);
     void setPowerValue(int);
@@ -84,6 +82,7 @@ private:
     ErrorPage *errorPage;
 
     int auto_index;
+    CusDialog *auto_CusDialog;
 
     static const int setBtnID = 1;
     static const int manualBtnID = 2;

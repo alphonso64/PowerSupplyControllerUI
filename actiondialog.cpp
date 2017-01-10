@@ -12,6 +12,7 @@ ActionDialog::ActionDialog(QWidget *parent) :
     QStringListModel *model = new QStringListModel(this);
     model->setStringList( Util::getLocalFileList());
     ui->listView->setModel(model);
+    ui->listView->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
     this->setWindowFlags(Qt::Tool | Qt::WindowStaysOnTopHint |Qt::X11BypassWindowManagerHint);
     this->move(192,144);
