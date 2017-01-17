@@ -24,6 +24,7 @@ protected:
     void run();
 signals:
     void errorDispatch(int);
+    void errorDismiss(int);
 private:
     int errorFlag;
 

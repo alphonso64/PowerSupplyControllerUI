@@ -15,6 +15,8 @@ public:
     explicit ErrorPage(QWidget *parent = 0);
     ~ErrorPage();
 
+    void setMsg(QString msg);
+
 private:
     Ui::ErrorPage *ui;
 };

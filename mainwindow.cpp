@@ -8,7 +8,7 @@
 #include "util.h"
 #include <QStringListModel>
 
-#define SoftWare_Version "V1.1"
+#define SoftWare_Version "V1.2"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -52,6 +52,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->autoStartButton->setEnabled(false);
 
+    nam = new QNetworkAccessManager(this);
+
     uiInit();
     connect(group_manual, SIGNAL(buttonClicked(int)), this, SLOT(actionGroupButtonClick(int)));
     connect(ui->powerSlider, SIGNAL(valueChanged(int)), this, SLOT(setPowerValue(int)));
@@ -71,6 +73,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->autoButton, SIGNAL(clicked()), this, SLOT(autoButtonClick()));
     connect(ui->infoButton, SIGNAL(clicked()), this, SLOT(infoButtonClick()));
     connect(serialWorker, SIGNAL(errorDispatch(int)), this, SLOT(errorHandle(int)));
+    connect(serialWorker, SIGNAL(errorDismiss(int)), this, SLOT(errorDismissHandle(int)));
     connect(ui->softUpdateButton, SIGNAL(clicked()), this, SLOT(softUpdateButtonClick()));
     connect(ui->restartButton, SIGNAL(clicked()), this, SLOT(restartButtonClick()));
     connect(ui->firmwareUpdateButton, SIGNAL(clicked()), this, SLOT(firmwarepdateButtonClick()));
@@ -83,9 +86,11 @@ void MainWindow::fileRecorded()
     cusDialog.exec();
 }
 
-void MainWindow::errorHandle(int flag)
+void MainWindow::errorHandle(int code)
 {
-    if(flag == 1){
+    if(code & 0x01 == 1){
+        pcStatus.powerlevel = 0;
+        ui->powerSlider->setValue(0);
         if(autoStartFlag){
             if(auto_CusDialog!=NULL){
                 auto_CusDialog->done(-1);
@@ -104,12 +109,126 @@ void MainWindow::errorHandle(int flag)
             ui->autoListView->setCurrentIndex(indexFromModelB);
 
         }
+        qDebug()<<"recordFlag"<<recordFlag<<" startTimerFlag"<<startTimerFlag;
+        if(recordFlag){
+            recordFlag = false;
+            ui->recordStartButton->setText(Start_Record_TEXT);
+            recorder->exit(-1);
+            ui->fileNameEdit->setEnabled(true);
+
+            if(startTimerFlag){
+                startTimerFlag = false;
+                ui->manualStartButton->setText(TIME_START_TEXT);
+                ui->manualtimelabel->setText("");
+                ui->timeEdit->setText("");
+                timer->stop();
+            }
+            ui->manualStartButton->setEnabled(false);
+        }
+        errorPage->setMsg(EMERGENCY_STOP);
         errorPage->show();
-    }else if(flag == 0){
+    }
+    if( (code>>1) & 0x01 == 1){
         pcStatus.powerlevel = 0;
         ui->powerSlider->setValue(0);
-        errorPage->hide();
+        if(recordFlag){
+            recordFlag = false;
+            ui->recordStartButton->setText(Start_Record_TEXT);
+            recorder->exit(-1);
+            ui->fileNameEdit->setEnabled(true);
+            ui->fileNameText->setText("");
 
+            if(startTimerFlag){
+                startTimerFlag = false;
+                ui->manualStartButton->setText(TIME_START_TEXT);
+                ui->manualtimelabel->setText("");
+                ui->timeEdit->setText("");
+                timer->stop();
+            }
+            ui->manualStartButton->setEnabled(false);
+        }
+        if(autoStartFlag){
+            if(auto_CusDialog!=NULL){
+                auto_CusDialog->done(-1);
+            }
+            ui->autoStartButton->setText(Start_TEXT);
+            autoStartFlag = false;
+            autotimer->stop();
+            autostate.cnt = 0;
+            autostate.currenIndex = 0;
+            ui->autoStageText->setText("");
+            ui->autoStageTimeText->setText("");
+            auto_index = 0 ;
+            ui->autoIndexText->setText("");
+            QStringListModel *model =(QStringListModel *)  ui->autoListView->model();
+            model ->removeRows( 0, model->rowCount() );
+            ui->autoStartButton->setEnabled(false);
+            ui->fileNameText->setText("");
+
+        }
+        errorPage->setMsg(STATE_STANDBY);
+        errorPage->show();
+    }
+    if(dpuStatus.errorcode &0x11 == 0x11){
+        errorPage->setMsg(EMERGENCY_STOP);
+        errorPage->show();
+    }
+    if( (code>>2) & 0x01 == 1){
+        if(autoStartFlag){
+            if(auto_CusDialog!=NULL){
+                auto_CusDialog->done(-1);
+            }
+            ui->autoStartButton->setText(Start_TEXT);
+            autoStartFlag = false;
+            autotimer->stop();
+            autostate.cnt = 0;
+            autostate.currenIndex = 0;
+            ui->autoStageText->setText("");
+            ui->autoStageTimeText->setText("");
+            auto_index--;
+            ui->autoIndexText->setText("已完成"+QString::number(auto_index)+"炉");
+            QStringListModel *model =(QStringListModel *)  ui->autoListView->model();
+            QModelIndex indexFromModelB = model->index(autostate.currenIndex, 0);
+            ui->autoListView->setCurrentIndex(indexFromModelB);
+
+        }
+        ui->stateLabel->setVisible(false);
+        ui->stateLabel_2->setVisible(false);
+        ui->stateErrLabel->setVisible(true);
+        ui->stateErrLabel_2->setVisible(true);
+        ui->stateErrLabel->setText(STATE_FAULT);
+        ui->stateErrLabel_2->setText(STATE_FAULT);
+    }
+    if( (code>>3) & 0x01 == 1){
+        ui->stateLabel->setVisible(false);
+        ui->stateLabel_2->setVisible(true);
+        ui->stateErrLabel->setVisible(true);
+        ui->stateErrLabel_2->setVisible(true);
+        ui->stateErrLabel->setText(STATE_LOW_EFFICIENCY);
+        ui->stateErrLabel_2->setText(STATE_LOW_EFFICIENCY);
+    }
+}
+
+void MainWindow::errorDismissHandle(int code)
+{
+    if(dpuStatus.errorcode & 0x01 ==1 ){
+        errorPage->setMsg(EMERGENCY_STOP);
+    }else if ((dpuStatus.errorcode >>1 )& 0x01 ==1){
+        errorPage->setMsg(STATE_STANDBY);
+    }else{
+        errorPage->hide();
+    }
+    if( (code>>2) & 0x01 == 1){
+        ui->stateLabel->setVisible(true);
+        ui->stateLabel_2->setVisible(true);
+        ui->stateErrLabel->setVisible(false);
+        ui->stateErrLabel_2->setVisible(false);
+    }
+    if( (code>>3) & 0x01 == 1){
+        ui->stateLabel->setVisible(true);
+        ui->stateLabel_2->setVisible(true);
+        ui->stateErrLabel->setVisible(false);
+        ui->stateErrLabel_2->setVisible(false);
     }
 }
 
@@ -173,14 +292,13 @@ void MainWindow::firmwarepdateButtonClick()
         cusdialog.exec();
         return;
     }
-    //CusDialog cusdialog(UPDATE_PROCESSING,3);
+
 	CusDialog cusdialog(UPDATE_PROCESSING,3);
 	serialWorker->cusdialog = &cusdialog;
     serialWorker->updateFirmWareFlag = true;
     serialWorker->path = QString(path+"/"+file_name);
 	serialWorker->path_ = QString(path+"/"+file_name_);
-	cusdialog.exec();
-    //cusdialog.exec();
+    cusdialog.exec();
 }
 
 void MainWindow::uiInit()
@@ -213,11 +331,20 @@ void MainWindow::uiInit()
     ui->displayPowerLabel_2->setText("");
     ui->displayWarningLabel_2->setText("");
 
+    ui->stateErrLabel->setVisible(false);
+    ui->stateErrLabel_2->setVisible(false);
+
+    warn_CusDialog = NULL;
+    auto_CusDialog = NULL;
+
+    ui->manualStartButton->setEnabled(false);
+
     ui->autoStageText->setAlignment(Qt::AlignCenter);
     ui->autoStageTimeText->setAlignment(Qt::AlignCenter);
     ui->autoIndexText->setAlignment(Qt::AlignCenter);
     QStringListModel *model = new QStringListModel();
     ui->autoListView->setModel(model);
+    ui->autoListView->setEditTriggers(QAbstractItemView::NoEditTriggers);
 //    ui->autoListView->setSelectionMode(QAbstractItemView::NoSelection);
 
     ui->softVersionLabel->setText(SoftWare_Version);
@@ -255,6 +382,16 @@ void MainWindow::autoStartClick()
         ui->autoListView->setCurrentIndex(indexFromModelB);
 
     }else{
+        if((dpuStatus.errorcode>>2) & 0x01 == 1){
+            CusDialog cusdialog(MSG_AUTO_STATE_FAULT,1);
+            cusdialog.exec();
+            return;
+        }
+        if((dpuStatus.errorcode>>3) & 0x01 == 1){
+            CusDialog cusdialog(MSG_AUTO_STATE_LOW_EFFICIENCY,1);
+            cusdialog.exec();
+            return;
+        }
         autostate = parser->autostate;
         if(autostate.stage.size() != 0){
             ui->autoStartButton->setText(End_TEXT);
@@ -266,7 +403,7 @@ void MainWindow::autoStartClick()
             ui->autoIndexText->setText("第"+QString::number(auto_index)+"炉熔炼中");
             autoProcessDisplay();
         }else{
-            CusDialog cusdialog(EMPTY_FILE,0);
+            CusDialog cusdialog(EMPTY_FILE,1);
             cusdialog.exec();
         }
     }
@@ -347,16 +484,20 @@ void MainWindow::autoProcess()
     if(autotime.hour() == 0 && autotime.minute() == 0 && autotime.second() == 0){
         autotimer->stop();
         State state = autostate.stage.at(autostate.currenIndex);
+        if(warn_CusDialog != NULL){
+            warn_CusDialog->reject();
+        }
         if(state.actionID == ActionAControl){
-             CusDialog cusDialog(ActionAControl_TEXT,1);
-             auto_CusDialog = &cusDialog;
+             auto_CusDialog = new CusDialog(ActionAControl_TEXT,1);
              pcStatus.warningControl = true;
-             if(0 == cusDialog.exec())
+             if(0 == auto_CusDialog->exec())
               {
+                 delete auto_CusDialog;
                  auto_CusDialog = NULL;
                  pcStatus.warningControl = false;
                  qDebug()<<"done";
               }else{
+                 delete auto_CusDialog;
                  auto_CusDialog = NULL;
                  pcStatus.warningControl = false;
                  qDebug()<<"reject";
@@ -364,12 +505,12 @@ void MainWindow::autoProcess()
              }
 
         }else if(state.actionID  == ActionBControl){
-            CusDialog cusDialog(ActionBControl_TEXT,1);
-            auto_CusDialog = &cusDialog;
+            auto_CusDialog = new CusDialog(ActionBControl_TEXT,1);
             pcStatus.warningControl = true;
             pcStatus.toppleControl = true;
-            if(0 == cusDialog.exec())
+            if(0 == auto_CusDialog->exec())
              {
+                delete auto_CusDialog;
                 auto_CusDialog = NULL;
                 pcStatus.warningControl = false;
                 pcStatus.toppleControl = false;
@@ -382,30 +523,32 @@ void MainWindow::autoProcess()
                 return;
             }
         }else if(state.actionID  == ActionCControl){
-            CusDialog cusDialog(ActionCControl_TEXT,1);
-            auto_CusDialog = &cusDialog;
+            auto_CusDialog = new CusDialog(ActionCControl_TEXT,1);
             pcStatus.warningControl = true;
-            if(0 == cusDialog.exec())
+            if(0 == auto_CusDialog->exec())
              {
+                delete auto_CusDialog;
                 auto_CusDialog = NULL;
                 pcStatus.warningControl = false;
                 qDebug()<<"done";
              }else{
+                delete auto_CusDialog;
                 auto_CusDialog = NULL;
                 pcStatus.warningControl = false;
                 qDebug()<<"reject";
                 return;
             }
         }else if(state.actionID  == ActionDControl){
-            CusDialog cusDialog(ActionDControl_TEXT,1);
-            auto_CusDialog = &cusDialog;
+            auto_CusDialog = new CusDialog(ActionDControl_TEXT,1);
             pcStatus.warningControl = true;
-            if(0 == cusDialog.exec())
+            if(0 == auto_CusDialog->exec())
              {
+                delete auto_CusDialog;
                 auto_CusDialog = NULL;
                 pcStatus.warningControl = false;
                 qDebug()<<"done";
              }else{
+                delete auto_CusDialog;
                 auto_CusDialog = NULL;
                 pcStatus.warningControl = false;
                 qDebug()<<"reject";
@@ -506,6 +649,7 @@ void MainWindow::display()
 void MainWindow::recordStartClick(bool flag)
 {    
     if(recordFlag){
+        ui->manualStartButton->setEnabled(false);
         recordFlag = false;
         ui->recordStartButton->setText(Start_Record_TEXT);
         recorder->exit();
@@ -517,6 +661,7 @@ void MainWindow::recordStartClick(bool flag)
             cusdialog.exec();
             return;
         }
+        ui->manualStartButton->setEnabled(true);
         ui->fileNameEdit->setEnabled(false);
         recordFlag = true;
         ui->recordStartButton->setText(End_Record__TEXT);
@@ -545,7 +690,8 @@ void MainWindow::manualStartClick(bool flag)
         }
     }else{
         startTimerFlag = false;
-        ui->manualStartButton->setText(Start_TEXT);
+        ui->manualStartButton->setText(TIME_START_TEXT);
+        ui->manualtimelabel->setText("");
         timer->stop();
     }
 }
@@ -575,8 +721,10 @@ void MainWindow::setButtonClick()
 void MainWindow::manualButtonClick()
 {
     if(autoStartFlag){
-        CusDialog cusDialog("正在自动模式下，无法切换手动模式",1);
-        cusDialog.exec();
+        warn_CusDialog = new  CusDialog("正在自动模式下，无法切换手动模式",1);
+        warn_CusDialog->exec();
+        delete warn_CusDialog;
+        warn_CusDialog = NULL;
         return;
     }
     ui->stackedWidget->setCurrentIndex(1);
@@ -584,8 +732,6 @@ void MainWindow::manualButtonClick()
     ui->manualButton->setEnabled(false);
     ui->autoButton->setEnabled(true);
     ui->infoButton->setEnabled(true);
-//    qDebug()<<"valueChanged"<<pcStatus.powerlevel;
-//    ui->powerSlider->setValue(pcStatus.powerlevel);
 }
 
 void MainWindow::autoButtonClick()
@@ -683,3 +829,30 @@ MainWindow::~MainWindow()
 {
     delete ui;
 }
+
+//void MainWindow::on_pushButton_clicked()
+//{
+////    QNetworkRequest *request = new QNetworkRequest();
+////    request->setUrl(QUrl("http://192.168.40.1:8089/PowerMonitor/rest/api/test"));
+////    nam->get(*request);
+
+//    Json::FastWriter writer;
+//    Json::Value status;
+
+//    status["power"] = "10";
+//    std::string json_file = writer.write(status);
+
+////    QNetworkRequest *request = new QNetworkRequest();
+////    request->setUrl(QUrl("http://localhost:8888/login"));
+
+////    QNetworkReply* reply = nam->post(*request,postData);
+
+
+//    QUrl url("http://192.168.40.1:8089/PowerMonitor/rest/api/uploadStatus");
+//    QByteArray array(json_file.c_str());
+//    QNetworkRequest request(url);
+//    request.setHeader(QNetworkRequest::ContentTypeHeader,QVariant("application/json"));
+//    nam->post(request,array);
+
+
+//}

@@ -58,8 +58,7 @@ SOURCES       = main.cpp \
 		serialworker.cpp \
 		frminput.cpp \
 		errorpage.cpp \
-		filecopyer.cpp \
-		firmware.cpp moc_mainwindow.cpp \
+		filecopyer.cpp moc_mainwindow.cpp \
 		moc_cusdialog.cpp \
 		moc_actiondialog.cpp \
 		moc_recorderworker.cpp \
@@ -82,7 +81,6 @@ OBJECTS       = main.o \
 		frminput.o \
 		errorpage.o \
 		filecopyer.o \
-		firmware.o \
 		moc_mainwindow.o \
 		moc_cusdialog.o \
 		moc_actiondialog.o \
@@ -159,8 +157,7 @@ DIST          = /usr/lib/i386-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		serialworker.cpp \
 		frminput.cpp \
 		errorpage.cpp \
-		filecopyer.cpp \
-		firmware.cpp
+		filecopyer.cpp
 QMAKE_TARGET  = PowerSupplyController
 DESTDIR       = #avoid trailing-slash linebreak
 TARGET        = PowerSupplyController
@@ -319,7 +316,7 @@ qmake_all: FORCE
 
 dist: 
 	@test -d .tmp/PowerSupplyController1.0.0 || mkdir -p .tmp/PowerSupplyController1.0.0
-	$(COPY_FILE) --parents $(DIST) .tmp/PowerSupplyController1.0.0/ && $(COPY_FILE) --parents const_define.h mainwindow.h json/allocator.h json/assertions.h json/autolink.h json/config.h json/features.h json/forwards.h json/json.h json/reader.h json/value.h json/version.h json/writer.h cusdialog.h actiondialog.h dpustatus.h pcstatus.h recorderworker.h util.h parseworker.h autostate.h serialworker.h frminput.h errorpage.h filecopyer.h firmware.h .tmp/PowerSupplyController1.0.0/ && $(COPY_FILE) --parents main.cpp mainwindow.cpp cusdialog.cpp actiondialog.cpp dpustatus.cpp pcstatus.cpp recorderworker.cpp util.cpp parseworker.cpp autostate.cpp serialworker.cpp frminput.cpp errorpage.cpp filecopyer.cpp firmware.cpp .tmp/PowerSupplyController1.0.0/ && $(COPY_FILE) --parents mainwindow.ui cusdialog.ui actiondialog.ui frminput.ui errorpage.ui .tmp/PowerSupplyController1.0.0/ && (cd `dirname .tmp/PowerSupplyController1.0.0` && $(TAR) PowerSupplyController1.0.0.tar PowerSupplyController1.0.0 && $(COMPRESS) PowerSupplyController1.0.0.tar) && $(MOVE) `dirname .tmp/PowerSupplyController1.0.0`/PowerSupplyController1.0.0.tar.gz . && $(DEL_FILE) -r .tmp/PowerSupplyController1.0.0
+	$(COPY_FILE) --parents $(DIST) .tmp/PowerSupplyController1.0.0/ && $(COPY_FILE) --parents const_define.h mainwindow.h json/allocator.h json/assertions.h json/autolink.h json/config.h json/features.h json/forwards.h json/json.h json/reader.h json/value.h json/version.h json/writer.h cusdialog.h actiondialog.h dpustatus.h pcstatus.h recorderworker.h util.h parseworker.h autostate.h serialworker.h frminput.h errorpage.h filecopyer.h .tmp/PowerSupplyController1.0.0/ && $(COPY_FILE) --parents main.cpp mainwindow.cpp cusdialog.cpp actiondialog.cpp dpustatus.cpp pcstatus.cpp recorderworker.cpp util.cpp parseworker.cpp autostate.cpp serialworker.cpp frminput.cpp errorpage.cpp filecopyer.cpp .tmp/PowerSupplyController1.0.0/ && $(COPY_FILE) --parents mainwindow.ui cusdialog.ui actiondialog.ui frminput.ui errorpage.ui .tmp/PowerSupplyController1.0.0/ && (cd `dirname .tmp/PowerSupplyController1.0.0` && $(TAR) PowerSupplyController1.0.0.tar PowerSupplyController1.0.0 && $(COMPRESS) PowerSupplyController1.0.0.tar) && $(MOVE) `dirname .tmp/PowerSupplyController1.0.0`/PowerSupplyController1.0.0.tar.gz . && $(DEL_FILE) -r .tmp/PowerSupplyController1.0.0
 
 
 clean:compiler_clean 
@@ -363,10 +360,9 @@ moc_mainwindow.cpp: const_define.h \
 		parseworker.h \
 		autostate.h \
 		serialworker.h \
-		firmware.h \
-		util.h \
 		errorpage.h \
 		filecopyer.h \
+		util.h \
 		mainwindow.h
 	/usr/lib/i386-linux-gnu/qt5/bin/moc $(DEFINES) -I/usr/lib/i386-linux-gnu/qt5/mkspecs/linux-g++ -I/home/thingword/PowerSupplyControllerUI -I/home/thingword/PowerSupplyControllerUI -I/home/thingword/PowerSupplyControllerUI -I/usr/include/i386-linux-gnu/qt5 -I/usr/include/i386-linux-gnu/qt5/QtWidgets -I/usr/include/i386-linux-gnu/qt5/QtSql -I/usr/include/i386-linux-gnu/qt5/QtGui -I/usr/include/i386-linux-gnu/qt5/QtCore -I/usr/include/c++/4.9 -I/usr/include/i386-linux-gnu/c++/4.9 -I/usr/include/c++/4.9/backward -I/usr/lib/gcc/i586-linux-gnu/4.9/include -I/usr/local/include -I/usr/lib/gcc/i586-linux-gnu/4.9/include-fixed -I/usr/include/i386-linux-gnu -I/usr/include mainwindow.h -o moc_mainwindow.cpp
 
@@ -412,8 +408,6 @@ moc_parseworker.cpp: pcstatus.h \
 moc_serialworker.cpp: dpustatus.h \
 		pcstatus.h \
 		const_define.h \
-		firmware.h \
-		util.h \
 		serialworker.h
 	/usr/lib/i386-linux-gnu/qt5/bin/moc $(DEFINES) -I/usr/lib/i386-linux-gnu/qt5/mkspecs/linux-g++ -I/home/thingword/PowerSupplyControllerUI -I/home/thingword/PowerSupplyControllerUI -I/home/thingword/PowerSupplyControllerUI -I/usr/include/i386-linux-gnu/qt5 -I/usr/include/i386-linux-gnu/qt5/QtWidgets -I/usr/include/i386-linux-gnu/qt5/QtSql -I/usr/include/i386-linux-gnu/qt5/QtGui -I/usr/include/i386-linux-gnu/qt5/QtCore -I/usr/include/c++/4.9 -I/usr/include/i386-linux-gnu/c++/4.9 -I/usr/include/c++/4.9/backward -I/usr/lib/gcc/i586-linux-gnu/4.9/include -I/usr/local/include -I/usr/lib/gcc/i586-linux-gnu/4.9/include-fixed -I/usr/include/i386-linux-gnu -I/usr/include serialworker.h -o moc_serialworker.cpp
 
@@ -478,10 +472,9 @@ main.o: main.cpp mainwindow.h \
 		parseworker.h \
 		autostate.h \
 		serialworker.h \
-		firmware.h \
-		util.h \
 		errorpage.h \
 		filecopyer.h \
+		util.h \
 		frminput.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o main.cpp
 
@@ -572,7 +565,6 @@ serialworker.o: serialworker.cpp serialworker.h \
 		dpustatus.h \
 		pcstatus.h \
 		const_define.h \
-		firmware.h \
 		util.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o serialworker.o serialworker.cpp
 
@@ -589,10 +581,6 @@ filecopyer.o: filecopyer.cpp filecopyer.h \
 		cusdialog.h \
 		const_define.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o filecopyer.o filecopyer.cpp
-
-firmware.o: firmware.cpp firmware.h \
-		util.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o firmware.o firmware.cpp
 
 moc_mainwindow.o: moc_mainwindow.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_mainwindow.o moc_mainwindow.cpp

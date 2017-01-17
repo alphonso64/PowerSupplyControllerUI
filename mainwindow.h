@@ -14,6 +14,10 @@
 #include "serialworker.h"
 #include "errorpage.h"
 #include "filecopyer.h"
+#include <QNetworkAccessManager>
+#include <QNetworkRequest>
+#include <QNetworkReply>
+
 #if _MSC_VER >= 1600
 #pragma execution_character_set("utf-8")
 #endif
@@ -47,6 +51,7 @@ private slots:
     void autoButtonClick();
     void infoButtonClick();
     void errorHandle(int);
+    void errorDismissHandle(int);
     void softUpdateButtonClick();
     void restartButtonClick();
     void firmwarepdateButtonClick();
@@ -67,6 +72,8 @@ private:
     QTimer *displaytimer;
     QTimer *autotimer;
 
+    QNetworkAccessManager *nam;
+
     bool startTimerFlag;
     bool recordFlag;
     bool autoStartFlag;
@@ -83,6 +90,7 @@ private:
 
     int auto_index;
     CusDialog *auto_CusDialog;
+    CusDialog *warn_CusDialog;
 
     static const int setBtnID = 1;
     static const int manualBtnID = 2;

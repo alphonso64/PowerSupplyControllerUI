@@ -15,6 +15,14 @@
 #define ActionCControl 104
 #define ActionDControl 105
 
+#define EMERGENCY_STOP "紧急停机"
+#define STATE_STANDBY "待机"
+#define STATE_FAULT          "设备故障"
+#define STATE_LOW_EFFICIENCY "热效率低"
+
+#define MSG_AUTO_STATE_FAULT          "设备故障,无法执行操作"
+#define MSG_AUTO_STATE_LOW_EFFICIENCY "热效率低,无法执行操作"
+
 #define ActionAControl_TEXT "加料"
 #define ActionBControl_TEXT "倒包"
 #define ActionCControl_TEXT "捞渣"
@@ -22,6 +30,7 @@
 
 #define File_Saved_TEXT "文件已保存"
 
+#define TIME_START_TEXT "计时"
 #define Start_TEXT "开始"
 #define End_TEXT "停止"
 

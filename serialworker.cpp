@@ -8,7 +8,7 @@ void SerialWorker::run()
 {
 	Util::list_ports();
     serial::Serial my_serial(COM6, 115200, serial::Timeout::simpleTimeout(2000));
-    //serial::Serial my_serial("/dev/ttyS0", 115200, serial::Timeout::simpleTimeout(2000));
+    //serial::Serial my_serial("/dev/ttyUSB0", 115200, serial::Timeout::simpleTimeout(2000));
 	if(my_serial.isOpen())
         qDebug()<<"has open";
 	else
@@ -118,18 +118,18 @@ bool SerialWorker::dataParse(QByteArray *array,DpuStatus *dpuStatus)
 					dpuStatus->ia =	(((uint8_t)array->at(i+11)<<8) + (uint8_t)array->at(i+10))/100;
 					dpuStatus->power = (((uint8_t)array->at(i+15)<<24)+ ((uint8_t)array->at(i+14)<<16) + ((uint8_t)array->at(i+13)<<8) + (uint8_t)array->at(i+12))/100;
 					dpuStatus->errorcode = ((uint8_t)array->at(i+19)<<24)+ ((uint8_t)array->at(i+18)<<16) + ((uint8_t)array->at(i+17)<<8) + (uint8_t)array->at(i+16);
-                    if(dpuStatus->errorcode&0x1!=0){
-                        if(errorFlag == 0){
-                            qDebug()<<"errorDispatch(1)";
-                            emit(errorDispatch(1));
-                            errorFlag = 1;
-                        }
-                    }else{
-                        if(errorFlag!=0){
-                            qDebug()<<"errorDispatch(0)";
-                            emit(errorDispatch(0));
-                            errorFlag = 0;
-                        }
+                    if(dpuStatus ->errorcode != errorFlag){
+                            int errortemp = dpuStatus ->errorcode  ^ errorFlag;
+                            int dismisscode = errortemp & errorFlag;
+                            int dispatchcode = dpuStatus ->errorcode & errortemp;
+                            qDebug()<<"errorcode "<<dpuStatus ->errorcode <<" dispatchcode"<<dispatchcode<<" dismisscode"<<dismisscode;
+                            if(dismisscode != 0){
+                                emit(errorDismiss(dismisscode));
+                            }
+                            if(dispatchcode!=0){
+                                emit(errorDispatch(dispatchcode));
+                            }
+                            errorFlag = dpuStatus ->errorcode;
                     }
 				} 
 				array->remove(0,i+len);

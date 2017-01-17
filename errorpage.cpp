@@ -13,3 +13,8 @@ ErrorPage::~ErrorPage()
 {
     delete ui;
 }
+
+void ErrorPage::setMsg(QString msg)
+{
+    ui->label->setText(msg);
+}
