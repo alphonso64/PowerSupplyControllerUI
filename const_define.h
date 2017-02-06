@@ -28,6 +28,10 @@
 #define ActionCControl_TEXT "捞渣"
 #define ActionDControl_TEXT "搅拌"
 
+#define UPLOAD_FILE_STATE_PROCESSING "正在上传"
+#define UPLOAD_FILE_STATE_SUCCESS "上传成功"
+#define UPLOAD_FILE_STATE_FAIL "上传失败"
+
 #define File_Saved_TEXT "文件已保存"
 
 #define TIME_START_TEXT "计时"
@@ -45,6 +49,8 @@
 
 #define State_UNLOCK_TEXT  "未锁定"
 #define State_LOCK_TEXT  "锁定"
+#define State_LOCK_DISABLE_TEXT  "关闭"
+
 
 #define State_NO_Warning_TEXT  "未报警"
 #define State_Warning_TEXT  "报警"
@@ -52,6 +58,9 @@
 #define PrePath QString("/root/program/file/")
 #define UDISK_PATH_PREFIX "/media/root/"
 #define UPDATE_TEMP_PATH "/root/program/temp/UpdateFile"
+
+#define NET_PIC_PATH "/root/wifi.png"
+#define NETOFF_PIC_PATH "/root/nowifi.png"
 
 #define UDISK_UNPLUGIN "未插入u盘"
 #define NO_UPDATE_FILE_DETECT "未检测到更新文件"

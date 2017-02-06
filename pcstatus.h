@@ -12,6 +12,7 @@ public:
     int action;
     int actionState;
     QString actionInfo;
+    bool state;
 
 };
 

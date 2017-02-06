@@ -8,7 +8,7 @@
 #include "util.h"
 #include <QStringListModel>
 
-#define SoftWare_Version "V1.2"
+#define SoftWare_Version "V1.3"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -50,9 +50,20 @@ MainWindow::MainWindow(QWidget *parent) :
     autotimer = new QTimer();
     autotimer->setInterval(1000);
 
+    nettimer =  new QTimer();
+    nettimer->setInterval(10000);
+    nettimer->start();
+
+    ui->fileUploadButton->setVisible(false);
     ui->autoStartButton->setEnabled(false);
 
     nam = new QNetworkAccessManager(this);
+
+    netStartFlag = false;
+    netStateFlag = false;
+
+    ui->netLabel->setPixmap(QPixmap(NETOFF_PIC_PATH));
+    ui->netLabel_2->setPixmap(QPixmap(NETOFF_PIC_PATH));
 
     uiInit();
     connect(group_manual, SIGNAL(buttonClicked(int)), this, SLOT(actionGroupButtonClick(int)));
@@ -60,6 +71,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->manualStartButton, SIGNAL(toggled(bool)), this, SLOT(manualStartClick(bool)));
     connect(ui->recordStartButton, SIGNAL(toggled(bool)), this, SLOT(recordStartClick(bool)));
     connect(timer, SIGNAL(timeout()), this, SLOT(timerOut()));
+    connect(nettimer, SIGNAL(timeout()), this, SLOT(stateUpload()));
     connect(displaytimer, SIGNAL(timeout()), this, SLOT(display()));
     connect(this, SIGNAL(recordStatus()), recorder, SLOT(actionRecord()));
     connect(ui->openFileButton, SIGNAL(clicked()), this, SLOT(fileOpen()));
@@ -76,7 +88,112 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(serialWorker, SIGNAL(errorDismiss(int)), this, SLOT(errorDismissHandle(int)));
     connect(ui->softUpdateButton, SIGNAL(clicked()), this, SLOT(softUpdateButtonClick()));
     connect(ui->restartButton, SIGNAL(clicked()), this, SLOT(restartButtonClick()));
+    connect(ui->fileUploadButton, SIGNAL(clicked()), this, SLOT(fileUpload()));
     connect(ui->firmwareUpdateButton, SIGNAL(clicked()), this, SLOT(firmwarepdateButtonClick()));
+
+    //qsrand(QTime(0,0,0).secsTo(QTime::currentTime()));
+}
+
+void MainWindow::fileUploadfinished()
+{
+    if (file_reply->error() == QNetworkReply::NoError)
+    {
+        qDebug()<<"upload done";
+        fileupload_CusDialog->changeStyle(UPLOAD_FILE_STATE_SUCCESS,1);
+    }
+    else
+    {
+        qDebug()<<"upload err";
+        fileupload_CusDialog->changeStyle(UPLOAD_FILE_STATE_FAIL,1);
+    }
+    file_reply->deleteLater();
+}
+
+void MainWindow::fileUpload()
+{
+    ActionDialog actionDialog;
+    if(0 == actionDialog.exec())
+    {
+        QHttpMultiPart *multiPart = new QHttpMultiPart(QHttpMultiPart::FormDataType);
+        QHttpPart imagePart;
+        imagePart.setHeader(QNetworkRequest::ContentDispositionHeader, QVariant("form-data; name=\"file\"; filename=\""+ actionDialog.fileName +"\""));/* version.tkt is the name on my Disk of the file that I want to upload */
+
+        QHttpPart textPart;
+        textPart.setHeader(QNetworkRequest::ContentDispositionHeader, QVariant("form-data; name=\"filepath\""));
+        textPart.setBody("toto");/* toto is the name I give to my file in the server */
+
+        QFile *file = new QFile(PrePath+actionDialog.fileName);
+        file->open(QIODevice::ReadOnly);
+        imagePart.setBodyDevice(file);
+        file->setParent(multiPart); // we cannot delete the file now, so delete it with the multiPart
+
+        multiPart->append(textPart);
+        multiPart->append(imagePart);
+
+        QUrl url("http://192.168.3.21:8089/PowerMonitor/rest/api/uploadFile");
+        QNetworkRequest request(url);
+        mutex.lock();
+        file_reply = nam->post(request, multiPart);
+        mutex.unlock();
+        multiPart->setParent(file_reply); // delete the multiPart with the reply
+        connect(file_reply, SIGNAL(finished()), this, SLOT(fileUploadfinished()));
+        fileupload_CusDialog = new CusDialog(UPLOAD_FILE_STATE_PROCESSING,3);
+        fileupload_CusDialog->exec();
+        delete fileupload_CusDialog;
+        fileupload_CusDialog = NULL;
+    }
+}
+
+void MainWindow::netfinished()
+{
+    if (state_reply->error() == QNetworkReply::NoError)
+    {
+        if(!netStateFlag){
+            ui->netLabel->setPixmap(QPixmap(NET_PIC_PATH));
+            ui->netLabel_2->setPixmap(QPixmap(NET_PIC_PATH));
+        }
+        netStateFlag = true;
+        qDebug()<<"handle ok here";
+    }
+    else
+    {
+        if(netStateFlag){
+            ui->netLabel->setPixmap(QPixmap(NETOFF_PIC_PATH));
+            ui->netLabel_2->setPixmap(QPixmap(NETOFF_PIC_PATH));
+        }
+        netStateFlag = false;
+        qDebug()<<"handle errors here";
+    }
+    state_reply->deleteLater();
+    netStartFlag = false;
+}
+
+void MainWindow::stateUpload()
+{
+    if(!netStartFlag){
+        netStartFlag = true;
+        qDebug()<<"stateUpload";
+        Json::FastWriter writer;
+        Json::Value status;
+        status["temp_a"] = QString::number(dpuStatus.temp_a).toStdString();
+        status["temp_b"] = QString::number(dpuStatus.temp_b).toStdString();
+        status["ua"] = QString::number(dpuStatus.ua).toStdString();
+        status["ia"] = QString::number(dpuStatus.ia).toStdString();
+        status["power"] = QString::number(dpuStatus.power).toStdString();
+        status["errorcode"] = QString::number(dpuStatus.errorcode).toStdString();
+        status["powerlevel"] = QString::number(pcStatus.powerlevel).toStdString();
+        std::string json_file = writer.write(status);
+
+        QUrl url("http://10.18.1.24:8080/PowerMonitor/rest/api/uploadStatus");
+        QByteArray array(json_file.c_str());
+        QNetworkRequest request(url);
+        request.setHeader(QNetworkRequest::ContentTypeHeader,QVariant("application/json"));
+        mutex.lock();
+        state_reply = nam->post(request,array);
+        mutex.unlock();
+        connect(state_reply, SIGNAL(finished()), this, SLOT(netfinished()));
+
+    }
 
 }
 
@@ -89,6 +206,8 @@ void MainWindow::fileRecorded()
 void MainWindow::errorHandle(int code)
 {
     if(code & 0x01 == 1){
+        pcStatus.state = false;
+        ui->openFileButton->setEnabled(true);
         pcStatus.powerlevel = 0;
         ui->powerSlider->setValue(0);
         if(autoStartFlag){
@@ -102,12 +221,12 @@ void MainWindow::errorHandle(int code)
             autostate.currenIndex = 0;
             ui->autoStageText->setText("");
             ui->autoStageTimeText->setText("");
-            auto_index--;
-            ui->autoIndexText->setText("已完成"+QString::number(auto_index)+"炉");
+            auto_index = 0 ;
+            ui->autoIndexText->setText("");
             QStringListModel *model =(QStringListModel *)  ui->autoListView->model();
-            QModelIndex indexFromModelB = model->index(autostate.currenIndex, 0);
-            ui->autoListView->setCurrentIndex(indexFromModelB);
-
+            model ->removeRows( 0, model->rowCount() );
+            ui->autoStartButton->setEnabled(false);
+            ui->fileNameText->setText("");
         }
         qDebug()<<"recordFlag"<<recordFlag<<" startTimerFlag"<<startTimerFlag;
         if(recordFlag){
@@ -129,6 +248,8 @@ void MainWindow::errorHandle(int code)
         errorPage->show();
     }
     if( (code>>1) & 0x01 == 1){
+        pcStatus.state = false;
+        ui->openFileButton->setEnabled(true);
         pcStatus.powerlevel = 0;
         ui->powerSlider->setValue(0);
         if(recordFlag){
@@ -180,6 +301,8 @@ void MainWindow::errorHandle(int code)
             }
             ui->autoStartButton->setText(Start_TEXT);
             autoStartFlag = false;
+            pcStatus.state = false;
+            ui->openFileButton->setEnabled(true);
             autotimer->stop();
             autostate.cnt = 0;
             autostate.currenIndex = 0;
@@ -368,6 +491,8 @@ void MainWindow::uiInit()
 void MainWindow::autoStartClick()
 {
     if(autoStartFlag){
+        pcStatus.state =  false;
+        ui->openFileButton->setEnabled(true);
         ui->autoStartButton->setText(Start_TEXT);
         autoStartFlag = false;
         autotimer->stop();
@@ -394,6 +519,8 @@ void MainWindow::autoStartClick()
         }
         autostate = parser->autostate;
         if(autostate.stage.size() != 0){
+            pcStatus.state = true;
+            ui->openFileButton->setEnabled(false);
             ui->autoStartButton->setText(End_TEXT);
             autoStartFlag = true;
             autostate = parser->autostate;
@@ -563,6 +690,8 @@ void MainWindow::autoProcess()
         }else {
             ui->autoStartButton->setText(Start_TEXT);
             autoStartFlag = false;
+            pcStatus.state = false;
+            ui->openFileButton->setEnabled(true);
             autotimer->stop();
             autostate.cnt = 0;
             autostate.currenIndex = 0;
@@ -617,6 +746,11 @@ void MainWindow::timerOut()
 
 void MainWindow::display()
 {
+//    dpuStatus.temp_a = qrand()%1400;
+//    dpuStatus.ua = qrand()%500;
+//    dpuStatus.ia = qrand()%300;
+//    dpuStatus.power = qrand()%500;
+
     ui->displayPowerLabel->setText(QString::number(dpuStatus.power));
     ui->displayTempLabel->setText(QString::number(dpuStatus.temp_a));
 
@@ -629,12 +763,17 @@ void MainWindow::display()
     ui->displayVoltageLabel_2->setText(QString::number(dpuStatus.ua));
     ui->displayCurrentLabel_2->setText(QString::number(dpuStatus.ia));
 
-    if(pcStatus.toppleControl){
-       ui->displayControlLabel->setText(State_UNLOCK_TEXT) ;
-       ui->displayControlLabel_2->setText(State_UNLOCK_TEXT) ;
+    if(!pcStatus.state){
+        ui->displayControlLabel->setText(State_LOCK_DISABLE_TEXT) ;
+        ui->displayControlLabel_2->setText(State_LOCK_DISABLE_TEXT) ;
     }else{
-       ui->displayControlLabel->setText(State_LOCK_TEXT) ;
-       ui->displayControlLabel_2->setText(State_LOCK_TEXT) ;
+        if(pcStatus.toppleControl){
+           ui->displayControlLabel->setText(State_UNLOCK_TEXT) ;
+           ui->displayControlLabel_2->setText(State_UNLOCK_TEXT) ;
+        }else{
+           ui->displayControlLabel->setText(State_LOCK_TEXT) ;
+           ui->displayControlLabel_2->setText(State_LOCK_TEXT) ;
+        }
     }
 
     if(pcStatus.warningControl){
@@ -654,6 +793,7 @@ void MainWindow::recordStartClick(bool flag)
         ui->recordStartButton->setText(Start_Record_TEXT);
         recorder->exit();
         ui->fileNameEdit->setEnabled(true);
+        pcStatus.state  = false;
     }else{
         QString fileName = ui->fileNameEdit->text();
         if(fileName.length() == 0){
@@ -661,6 +801,7 @@ void MainWindow::recordStartClick(bool flag)
             cusdialog.exec();
             return;
         }
+        pcStatus.state  = true;
         ui->manualStartButton->setEnabled(true);
         ui->fileNameEdit->setEnabled(false);
         recordFlag = true;
@@ -830,29 +971,3 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-//void MainWindow::on_pushButton_clicked()
-//{
-////    QNetworkRequest *request = new QNetworkRequest();
-////    request->setUrl(QUrl("http://192.168.40.1:8089/PowerMonitor/rest/api/test"));
-////    nam->get(*request);
-
-//    Json::FastWriter writer;
-//    Json::Value status;
-
-//    status["power"] = "10";
-//    std::string json_file = writer.write(status);
-
-////    QNetworkRequest *request = new QNetworkRequest();
-////    request->setUrl(QUrl("http://localhost:8888/login"));
-
-////    QNetworkReply* reply = nam->post(*request,postData);
-
-
-//    QUrl url("http://192.168.40.1:8089/PowerMonitor/rest/api/uploadStatus");
-//    QByteArray array(json_file.c_str());
-//    QNetworkRequest request(url);
-//    request.setHeader(QNetworkRequest::ContentTypeHeader,QVariant("application/json"));
-//    nam->post(request,array);
-
-
-//}

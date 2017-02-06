@@ -17,7 +17,9 @@
 #include <QNetworkAccessManager>
 #include <QNetworkRequest>
 #include <QNetworkReply>
-
+#include <QHttpMultiPart>
+#include <QHttpPart>
+#include <QMutex>
 #if _MSC_VER >= 1600
 #pragma execution_character_set("utf-8")
 #endif
@@ -55,6 +57,10 @@ private slots:
     void softUpdateButtonClick();
     void restartButtonClick();
     void firmwarepdateButtonClick();
+    void stateUpload();
+    void fileUpload();
+    void netfinished();
+    void fileUploadfinished();
 
 private:
     void uiInit();
@@ -71,12 +77,15 @@ private:
     QTimer *timer;
     QTimer *displaytimer;
     QTimer *autotimer;
+    QTimer *nettimer;
 
     QNetworkAccessManager *nam;
 
     bool startTimerFlag;
     bool recordFlag;
     bool autoStartFlag;
+    bool netStateFlag;
+    bool netStartFlag;
     PcStatus pcStatus;
     DpuStatus dpuStatus;
 
@@ -91,6 +100,11 @@ private:
     int auto_index;
     CusDialog *auto_CusDialog;
     CusDialog *warn_CusDialog;
+    CusDialog *fileupload_CusDialog;
+
+    QNetworkReply *state_reply;
+    QNetworkReply *file_reply;
+    QMutex mutex;
 
     static const int setBtnID = 1;
     static const int manualBtnID = 2;

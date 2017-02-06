@@ -12,13 +12,13 @@ MAKEFILE      = Makefile
 
 CC            = gcc
 CXX           = g++
-DEFINES       = -DQT_NO_DEBUG -DQT_WIDGETS_LIB -DQT_SQL_LIB -DQT_GUI_LIB -DQT_CORE_LIB
+DEFINES       = -DQT_NO_DEBUG -DQT_WIDGETS_LIB -DQT_NETWORK_LIB -DQT_SQL_LIB -DQT_GUI_LIB -DQT_CORE_LIB
 CFLAGS        = -pipe -O2 -Wall -W -D_REENTRANT -fPIE $(DEFINES)
 CXXFLAGS      = -pipe -O2 -Wall -W -D_REENTRANT -fPIE $(DEFINES)
-INCPATH       = -I/usr/lib/i386-linux-gnu/qt5/mkspecs/linux-g++ -I. -I. -I. -isystem /usr/include/i386-linux-gnu/qt5 -isystem /usr/include/i386-linux-gnu/qt5/QtWidgets -isystem /usr/include/i386-linux-gnu/qt5/QtSql -isystem /usr/include/i386-linux-gnu/qt5/QtGui -isystem /usr/include/i386-linux-gnu/qt5/QtCore -I. -I.
+INCPATH       = -I/usr/lib/i386-linux-gnu/qt5/mkspecs/linux-g++ -I. -I. -I. -isystem /usr/include/i386-linux-gnu/qt5 -isystem /usr/include/i386-linux-gnu/qt5/QtWidgets -isystem /usr/include/i386-linux-gnu/qt5/QtNetwork -isystem /usr/include/i386-linux-gnu/qt5/QtSql -isystem /usr/include/i386-linux-gnu/qt5/QtGui -isystem /usr/include/i386-linux-gnu/qt5/QtCore -I. -I.
 LINK          = g++
 LFLAGS        = -Wl,-O1
-LIBS          = $(SUBLIBS) -L/home/thingword/PowerSupplyControllerUI/ -ljsoncpp -lserial -lQt5Widgets -lQt5Sql -lQt5Gui -lQt5Core -lGL -lpthread 
+LIBS          = $(SUBLIBS) -L/root/PowerSupplyControllerUI/ -ljsoncpp -lserial -lQt5Widgets -lQt5Network -lQt5Sql -lQt5Gui -lQt5Core -lGL -lpthread 
 AR            = ar cqs
 RANLIB        = 
 QMAKE         = /usr/lib/i386-linux-gnu/qt5/bin/qmake
@@ -58,7 +58,8 @@ SOURCES       = main.cpp \
 		serialworker.cpp \
 		frminput.cpp \
 		errorpage.cpp \
-		filecopyer.cpp moc_mainwindow.cpp \
+		filecopyer.cpp \
+		firmware.cpp moc_mainwindow.cpp \
 		moc_cusdialog.cpp \
 		moc_actiondialog.cpp \
 		moc_recorderworker.cpp \
@@ -81,6 +82,7 @@ OBJECTS       = main.o \
 		frminput.o \
 		errorpage.o \
 		filecopyer.o \
+		firmware.o \
 		moc_mainwindow.o \
 		moc_cusdialog.o \
 		moc_actiondialog.o \
@@ -157,7 +159,8 @@ DIST          = /usr/lib/i386-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		serialworker.cpp \
 		frminput.cpp \
 		errorpage.cpp \
-		filecopyer.cpp
+		filecopyer.cpp \
+		firmware.cpp
 QMAKE_TARGET  = PowerSupplyController
 DESTDIR       = #avoid trailing-slash linebreak
 TARGET        = PowerSupplyController
@@ -187,7 +190,7 @@ first: all
 
 all: Makefile $(TARGET)
 
-$(TARGET): /home/thingword/PowerSupplyControllerUI/libjsoncpp.a ui_mainwindow.h ui_cusdialog.h ui_actiondialog.h ui_frminput.h ui_errorpage.h $(OBJECTS)  
+$(TARGET): /root/PowerSupplyControllerUI/libjsoncpp.a ui_mainwindow.h ui_cusdialog.h ui_actiondialog.h ui_frminput.h ui_errorpage.h $(OBJECTS)  
 	$(LINK) $(LFLAGS) -o $(TARGET) $(OBJECTS) $(OBJCOMP) $(LIBS)
 
 Makefile: PowerSupplyController.pro /usr/lib/i386-linux-gnu/qt5/mkspecs/linux-g++/qmake.conf /usr/lib/i386-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
@@ -248,6 +251,7 @@ Makefile: PowerSupplyController.pro /usr/lib/i386-linux-gnu/qt5/mkspecs/linux-g+
 		/usr/lib/i386-linux-gnu/libQt5Widgets.prl \
 		/usr/lib/i386-linux-gnu/libQt5Gui.prl \
 		/usr/lib/i386-linux-gnu/libQt5Core.prl \
+		/usr/lib/i386-linux-gnu/libQt5Network.prl \
 		/usr/lib/i386-linux-gnu/libQt5Sql.prl
 	$(QMAKE) -o Makefile PowerSupplyController.pro
 /usr/lib/i386-linux-gnu/qt5/mkspecs/features/spec_pre.prf:
@@ -308,6 +312,7 @@ PowerSupplyController.pro:
 /usr/lib/i386-linux-gnu/libQt5Widgets.prl:
 /usr/lib/i386-linux-gnu/libQt5Gui.prl:
 /usr/lib/i386-linux-gnu/libQt5Core.prl:
+/usr/lib/i386-linux-gnu/libQt5Network.prl:
 /usr/lib/i386-linux-gnu/libQt5Sql.prl:
 qmake: FORCE
 	@$(QMAKE) -o Makefile PowerSupplyController.pro
@@ -316,7 +321,7 @@ qmake_all: FORCE
 
 dist: 
 	@test -d .tmp/PowerSupplyController1.0.0 || mkdir -p .tmp/PowerSupplyController1.0.0
-	$(COPY_FILE) --parents $(DIST) .tmp/PowerSupplyController1.0.0/ && $(COPY_FILE) --parents const_define.h mainwindow.h json/allocator.h json/assertions.h json/autolink.h json/config.h json/features.h json/forwards.h json/json.h json/reader.h json/value.h json/version.h json/writer.h cusdialog.h actiondialog.h dpustatus.h pcstatus.h recorderworker.h util.h parseworker.h autostate.h serialworker.h frminput.h errorpage.h filecopyer.h .tmp/PowerSupplyController1.0.0/ && $(COPY_FILE) --parents main.cpp mainwindow.cpp cusdialog.cpp actiondialog.cpp dpustatus.cpp pcstatus.cpp recorderworker.cpp util.cpp parseworker.cpp autostate.cpp serialworker.cpp frminput.cpp errorpage.cpp filecopyer.cpp .tmp/PowerSupplyController1.0.0/ && $(COPY_FILE) --parents mainwindow.ui cusdialog.ui actiondialog.ui frminput.ui errorpage.ui .tmp/PowerSupplyController1.0.0/ && (cd `dirname .tmp/PowerSupplyController1.0.0` && $(TAR) PowerSupplyController1.0.0.tar PowerSupplyController1.0.0 && $(COMPRESS) PowerSupplyController1.0.0.tar) && $(MOVE) `dirname .tmp/PowerSupplyController1.0.0`/PowerSupplyController1.0.0.tar.gz . && $(DEL_FILE) -r .tmp/PowerSupplyController1.0.0
+	$(COPY_FILE) --parents $(DIST) .tmp/PowerSupplyController1.0.0/ && $(COPY_FILE) --parents const_define.h mainwindow.h json/allocator.h json/assertions.h json/autolink.h json/config.h json/features.h json/forwards.h json/json.h json/reader.h json/value.h json/version.h json/writer.h cusdialog.h actiondialog.h dpustatus.h pcstatus.h recorderworker.h util.h parseworker.h autostate.h serialworker.h frminput.h errorpage.h filecopyer.h firmware.h .tmp/PowerSupplyController1.0.0/ && $(COPY_FILE) --parents main.cpp mainwindow.cpp cusdialog.cpp actiondialog.cpp dpustatus.cpp pcstatus.cpp recorderworker.cpp util.cpp parseworker.cpp autostate.cpp serialworker.cpp frminput.cpp errorpage.cpp filecopyer.cpp firmware.cpp .tmp/PowerSupplyController1.0.0/ && $(COPY_FILE) --parents mainwindow.ui cusdialog.ui actiondialog.ui frminput.ui errorpage.ui .tmp/PowerSupplyController1.0.0/ && (cd `dirname .tmp/PowerSupplyController1.0.0` && $(TAR) PowerSupplyController1.0.0.tar PowerSupplyController1.0.0 && $(COMPRESS) PowerSupplyController1.0.0.tar) && $(MOVE) `dirname .tmp/PowerSupplyController1.0.0`/PowerSupplyController1.0.0.tar.gz . && $(DEL_FILE) -r .tmp/PowerSupplyController1.0.0
 
 
 clean:compiler_clean 
@@ -360,17 +365,18 @@ moc_mainwindow.cpp: const_define.h \
 		parseworker.h \
 		autostate.h \
 		serialworker.h \
+		firmware.h \
+		util.h \
 		errorpage.h \
 		filecopyer.h \
-		util.h \
 		mainwindow.h
-	/usr/lib/i386-linux-gnu/qt5/bin/moc $(DEFINES) -I/usr/lib/i386-linux-gnu/qt5/mkspecs/linux-g++ -I/home/thingword/PowerSupplyControllerUI -I/home/thingword/PowerSupplyControllerUI -I/home/thingword/PowerSupplyControllerUI -I/usr/include/i386-linux-gnu/qt5 -I/usr/include/i386-linux-gnu/qt5/QtWidgets -I/usr/include/i386-linux-gnu/qt5/QtSql -I/usr/include/i386-linux-gnu/qt5/QtGui -I/usr/include/i386-linux-gnu/qt5/QtCore -I/usr/include/c++/4.9 -I/usr/include/i386-linux-gnu/c++/4.9 -I/usr/include/c++/4.9/backward -I/usr/lib/gcc/i586-linux-gnu/4.9/include -I/usr/local/include -I/usr/lib/gcc/i586-linux-gnu/4.9/include-fixed -I/usr/include/i386-linux-gnu -I/usr/include mainwindow.h -o moc_mainwindow.cpp
+	/usr/lib/i386-linux-gnu/qt5/bin/moc $(DEFINES) -I/usr/lib/i386-linux-gnu/qt5/mkspecs/linux-g++ -I/root/PowerSupplyControllerUI -I/root/PowerSupplyControllerUI -I/root/PowerSupplyControllerUI -I/usr/include/i386-linux-gnu/qt5 -I/usr/include/i386-linux-gnu/qt5/QtWidgets -I/usr/include/i386-linux-gnu/qt5/QtNetwork -I/usr/include/i386-linux-gnu/qt5/QtSql -I/usr/include/i386-linux-gnu/qt5/QtGui -I/usr/include/i386-linux-gnu/qt5/QtCore -I/usr/include/c++/4.9 -I/usr/include/i386-linux-gnu/c++/4.9 -I/usr/include/c++/4.9/backward -I/usr/lib/gcc/i586-linux-gnu/4.9/include -I/usr/local/include -I/usr/lib/gcc/i586-linux-gnu/4.9/include-fixed -I/usr/include/i386-linux-gnu -I/usr/include mainwindow.h -o moc_mainwindow.cpp
 
 moc_cusdialog.cpp: cusdialog.h
-	/usr/lib/i386-linux-gnu/qt5/bin/moc $(DEFINES) -I/usr/lib/i386-linux-gnu/qt5/mkspecs/linux-g++ -I/home/thingword/PowerSupplyControllerUI -I/home/thingword/PowerSupplyControllerUI -I/home/thingword/PowerSupplyControllerUI -I/usr/include/i386-linux-gnu/qt5 -I/usr/include/i386-linux-gnu/qt5/QtWidgets -I/usr/include/i386-linux-gnu/qt5/QtSql -I/usr/include/i386-linux-gnu/qt5/QtGui -I/usr/include/i386-linux-gnu/qt5/QtCore -I/usr/include/c++/4.9 -I/usr/include/i386-linux-gnu/c++/4.9 -I/usr/include/c++/4.9/backward -I/usr/lib/gcc/i586-linux-gnu/4.9/include -I/usr/local/include -I/usr/lib/gcc/i586-linux-gnu/4.9/include-fixed -I/usr/include/i386-linux-gnu -I/usr/include cusdialog.h -o moc_cusdialog.cpp
+	/usr/lib/i386-linux-gnu/qt5/bin/moc $(DEFINES) -I/usr/lib/i386-linux-gnu/qt5/mkspecs/linux-g++ -I/root/PowerSupplyControllerUI -I/root/PowerSupplyControllerUI -I/root/PowerSupplyControllerUI -I/usr/include/i386-linux-gnu/qt5 -I/usr/include/i386-linux-gnu/qt5/QtWidgets -I/usr/include/i386-linux-gnu/qt5/QtNetwork -I/usr/include/i386-linux-gnu/qt5/QtSql -I/usr/include/i386-linux-gnu/qt5/QtGui -I/usr/include/i386-linux-gnu/qt5/QtCore -I/usr/include/c++/4.9 -I/usr/include/i386-linux-gnu/c++/4.9 -I/usr/include/c++/4.9/backward -I/usr/lib/gcc/i586-linux-gnu/4.9/include -I/usr/local/include -I/usr/lib/gcc/i586-linux-gnu/4.9/include-fixed -I/usr/include/i386-linux-gnu -I/usr/include cusdialog.h -o moc_cusdialog.cpp
 
 moc_actiondialog.cpp: actiondialog.h
-	/usr/lib/i386-linux-gnu/qt5/bin/moc $(DEFINES) -I/usr/lib/i386-linux-gnu/qt5/mkspecs/linux-g++ -I/home/thingword/PowerSupplyControllerUI -I/home/thingword/PowerSupplyControllerUI -I/home/thingword/PowerSupplyControllerUI -I/usr/include/i386-linux-gnu/qt5 -I/usr/include/i386-linux-gnu/qt5/QtWidgets -I/usr/include/i386-linux-gnu/qt5/QtSql -I/usr/include/i386-linux-gnu/qt5/QtGui -I/usr/include/i386-linux-gnu/qt5/QtCore -I/usr/include/c++/4.9 -I/usr/include/i386-linux-gnu/c++/4.9 -I/usr/include/c++/4.9/backward -I/usr/lib/gcc/i586-linux-gnu/4.9/include -I/usr/local/include -I/usr/lib/gcc/i586-linux-gnu/4.9/include-fixed -I/usr/include/i386-linux-gnu -I/usr/include actiondialog.h -o moc_actiondialog.cpp
+	/usr/lib/i386-linux-gnu/qt5/bin/moc $(DEFINES) -I/usr/lib/i386-linux-gnu/qt5/mkspecs/linux-g++ -I/root/PowerSupplyControllerUI -I/root/PowerSupplyControllerUI -I/root/PowerSupplyControllerUI -I/usr/include/i386-linux-gnu/qt5 -I/usr/include/i386-linux-gnu/qt5/QtWidgets -I/usr/include/i386-linux-gnu/qt5/QtNetwork -I/usr/include/i386-linux-gnu/qt5/QtSql -I/usr/include/i386-linux-gnu/qt5/QtGui -I/usr/include/i386-linux-gnu/qt5/QtCore -I/usr/include/c++/4.9 -I/usr/include/i386-linux-gnu/c++/4.9 -I/usr/include/c++/4.9/backward -I/usr/lib/gcc/i586-linux-gnu/4.9/include -I/usr/local/include -I/usr/lib/gcc/i586-linux-gnu/4.9/include-fixed -I/usr/include/i386-linux-gnu -I/usr/include actiondialog.h -o moc_actiondialog.cpp
 
 moc_recorderworker.cpp: pcstatus.h \
 		const_define.h \
@@ -386,7 +392,7 @@ moc_recorderworker.cpp: pcstatus.h \
 		json/features.h \
 		json/writer.h \
 		recorderworker.h
-	/usr/lib/i386-linux-gnu/qt5/bin/moc $(DEFINES) -I/usr/lib/i386-linux-gnu/qt5/mkspecs/linux-g++ -I/home/thingword/PowerSupplyControllerUI -I/home/thingword/PowerSupplyControllerUI -I/home/thingword/PowerSupplyControllerUI -I/usr/include/i386-linux-gnu/qt5 -I/usr/include/i386-linux-gnu/qt5/QtWidgets -I/usr/include/i386-linux-gnu/qt5/QtSql -I/usr/include/i386-linux-gnu/qt5/QtGui -I/usr/include/i386-linux-gnu/qt5/QtCore -I/usr/include/c++/4.9 -I/usr/include/i386-linux-gnu/c++/4.9 -I/usr/include/c++/4.9/backward -I/usr/lib/gcc/i586-linux-gnu/4.9/include -I/usr/local/include -I/usr/lib/gcc/i586-linux-gnu/4.9/include-fixed -I/usr/include/i386-linux-gnu -I/usr/include recorderworker.h -o moc_recorderworker.cpp
+	/usr/lib/i386-linux-gnu/qt5/bin/moc $(DEFINES) -I/usr/lib/i386-linux-gnu/qt5/mkspecs/linux-g++ -I/root/PowerSupplyControllerUI -I/root/PowerSupplyControllerUI -I/root/PowerSupplyControllerUI -I/usr/include/i386-linux-gnu/qt5 -I/usr/include/i386-linux-gnu/qt5/QtWidgets -I/usr/include/i386-linux-gnu/qt5/QtNetwork -I/usr/include/i386-linux-gnu/qt5/QtSql -I/usr/include/i386-linux-gnu/qt5/QtGui -I/usr/include/i386-linux-gnu/qt5/QtCore -I/usr/include/c++/4.9 -I/usr/include/i386-linux-gnu/c++/4.9 -I/usr/include/c++/4.9/backward -I/usr/lib/gcc/i586-linux-gnu/4.9/include -I/usr/local/include -I/usr/lib/gcc/i586-linux-gnu/4.9/include-fixed -I/usr/include/i386-linux-gnu -I/usr/include recorderworker.h -o moc_recorderworker.cpp
 
 moc_parseworker.cpp: pcstatus.h \
 		const_define.h \
@@ -403,25 +409,28 @@ moc_parseworker.cpp: pcstatus.h \
 		json/writer.h \
 		autostate.h \
 		parseworker.h
-	/usr/lib/i386-linux-gnu/qt5/bin/moc $(DEFINES) -I/usr/lib/i386-linux-gnu/qt5/mkspecs/linux-g++ -I/home/thingword/PowerSupplyControllerUI -I/home/thingword/PowerSupplyControllerUI -I/home/thingword/PowerSupplyControllerUI -I/usr/include/i386-linux-gnu/qt5 -I/usr/include/i386-linux-gnu/qt5/QtWidgets -I/usr/include/i386-linux-gnu/qt5/QtSql -I/usr/include/i386-linux-gnu/qt5/QtGui -I/usr/include/i386-linux-gnu/qt5/QtCore -I/usr/include/c++/4.9 -I/usr/include/i386-linux-gnu/c++/4.9 -I/usr/include/c++/4.9/backward -I/usr/lib/gcc/i586-linux-gnu/4.9/include -I/usr/local/include -I/usr/lib/gcc/i586-linux-gnu/4.9/include-fixed -I/usr/include/i386-linux-gnu -I/usr/include parseworker.h -o moc_parseworker.cpp
+	/usr/lib/i386-linux-gnu/qt5/bin/moc $(DEFINES) -I/usr/lib/i386-linux-gnu/qt5/mkspecs/linux-g++ -I/root/PowerSupplyControllerUI -I/root/PowerSupplyControllerUI -I/root/PowerSupplyControllerUI -I/usr/include/i386-linux-gnu/qt5 -I/usr/include/i386-linux-gnu/qt5/QtWidgets -I/usr/include/i386-linux-gnu/qt5/QtNetwork -I/usr/include/i386-linux-gnu/qt5/QtSql -I/usr/include/i386-linux-gnu/qt5/QtGui -I/usr/include/i386-linux-gnu/qt5/QtCore -I/usr/include/c++/4.9 -I/usr/include/i386-linux-gnu/c++/4.9 -I/usr/include/c++/4.9/backward -I/usr/lib/gcc/i586-linux-gnu/4.9/include -I/usr/local/include -I/usr/lib/gcc/i586-linux-gnu/4.9/include-fixed -I/usr/include/i386-linux-gnu -I/usr/include parseworker.h -o moc_parseworker.cpp
 
 moc_serialworker.cpp: dpustatus.h \
 		pcstatus.h \
 		const_define.h \
+		firmware.h \
+		util.h \
+		cusdialog.h \
 		serialworker.h
-	/usr/lib/i386-linux-gnu/qt5/bin/moc $(DEFINES) -I/usr/lib/i386-linux-gnu/qt5/mkspecs/linux-g++ -I/home/thingword/PowerSupplyControllerUI -I/home/thingword/PowerSupplyControllerUI -I/home/thingword/PowerSupplyControllerUI -I/usr/include/i386-linux-gnu/qt5 -I/usr/include/i386-linux-gnu/qt5/QtWidgets -I/usr/include/i386-linux-gnu/qt5/QtSql -I/usr/include/i386-linux-gnu/qt5/QtGui -I/usr/include/i386-linux-gnu/qt5/QtCore -I/usr/include/c++/4.9 -I/usr/include/i386-linux-gnu/c++/4.9 -I/usr/include/c++/4.9/backward -I/usr/lib/gcc/i586-linux-gnu/4.9/include -I/usr/local/include -I/usr/lib/gcc/i586-linux-gnu/4.9/include-fixed -I/usr/include/i386-linux-gnu -I/usr/include serialworker.h -o moc_serialworker.cpp
+	/usr/lib/i386-linux-gnu/qt5/bin/moc $(DEFINES) -I/usr/lib/i386-linux-gnu/qt5/mkspecs/linux-g++ -I/root/PowerSupplyControllerUI -I/root/PowerSupplyControllerUI -I/root/PowerSupplyControllerUI -I/usr/include/i386-linux-gnu/qt5 -I/usr/include/i386-linux-gnu/qt5/QtWidgets -I/usr/include/i386-linux-gnu/qt5/QtNetwork -I/usr/include/i386-linux-gnu/qt5/QtSql -I/usr/include/i386-linux-gnu/qt5/QtGui -I/usr/include/i386-linux-gnu/qt5/QtCore -I/usr/include/c++/4.9 -I/usr/include/i386-linux-gnu/c++/4.9 -I/usr/include/c++/4.9/backward -I/usr/lib/gcc/i586-linux-gnu/4.9/include -I/usr/local/include -I/usr/lib/gcc/i586-linux-gnu/4.9/include-fixed -I/usr/include/i386-linux-gnu -I/usr/include serialworker.h -o moc_serialworker.cpp
 
 moc_frminput.cpp: frminput.h
-	/usr/lib/i386-linux-gnu/qt5/bin/moc $(DEFINES) -I/usr/lib/i386-linux-gnu/qt5/mkspecs/linux-g++ -I/home/thingword/PowerSupplyControllerUI -I/home/thingword/PowerSupplyControllerUI -I/home/thingword/PowerSupplyControllerUI -I/usr/include/i386-linux-gnu/qt5 -I/usr/include/i386-linux-gnu/qt5/QtWidgets -I/usr/include/i386-linux-gnu/qt5/QtSql -I/usr/include/i386-linux-gnu/qt5/QtGui -I/usr/include/i386-linux-gnu/qt5/QtCore -I/usr/include/c++/4.9 -I/usr/include/i386-linux-gnu/c++/4.9 -I/usr/include/c++/4.9/backward -I/usr/lib/gcc/i586-linux-gnu/4.9/include -I/usr/local/include -I/usr/lib/gcc/i586-linux-gnu/4.9/include-fixed -I/usr/include/i386-linux-gnu -I/usr/include frminput.h -o moc_frminput.cpp
+	/usr/lib/i386-linux-gnu/qt5/bin/moc $(DEFINES) -I/usr/lib/i386-linux-gnu/qt5/mkspecs/linux-g++ -I/root/PowerSupplyControllerUI -I/root/PowerSupplyControllerUI -I/root/PowerSupplyControllerUI -I/usr/include/i386-linux-gnu/qt5 -I/usr/include/i386-linux-gnu/qt5/QtWidgets -I/usr/include/i386-linux-gnu/qt5/QtNetwork -I/usr/include/i386-linux-gnu/qt5/QtSql -I/usr/include/i386-linux-gnu/qt5/QtGui -I/usr/include/i386-linux-gnu/qt5/QtCore -I/usr/include/c++/4.9 -I/usr/include/i386-linux-gnu/c++/4.9 -I/usr/include/c++/4.9/backward -I/usr/lib/gcc/i586-linux-gnu/4.9/include -I/usr/local/include -I/usr/lib/gcc/i586-linux-gnu/4.9/include-fixed -I/usr/include/i386-linux-gnu -I/usr/include frminput.h -o moc_frminput.cpp
 
 moc_errorpage.cpp: errorpage.h
-	/usr/lib/i386-linux-gnu/qt5/bin/moc $(DEFINES) -I/usr/lib/i386-linux-gnu/qt5/mkspecs/linux-g++ -I/home/thingword/PowerSupplyControllerUI -I/home/thingword/PowerSupplyControllerUI -I/home/thingword/PowerSupplyControllerUI -I/usr/include/i386-linux-gnu/qt5 -I/usr/include/i386-linux-gnu/qt5/QtWidgets -I/usr/include/i386-linux-gnu/qt5/QtSql -I/usr/include/i386-linux-gnu/qt5/QtGui -I/usr/include/i386-linux-gnu/qt5/QtCore -I/usr/include/c++/4.9 -I/usr/include/i386-linux-gnu/c++/4.9 -I/usr/include/c++/4.9/backward -I/usr/lib/gcc/i586-linux-gnu/4.9/include -I/usr/local/include -I/usr/lib/gcc/i586-linux-gnu/4.9/include-fixed -I/usr/include/i386-linux-gnu -I/usr/include errorpage.h -o moc_errorpage.cpp
+	/usr/lib/i386-linux-gnu/qt5/bin/moc $(DEFINES) -I/usr/lib/i386-linux-gnu/qt5/mkspecs/linux-g++ -I/root/PowerSupplyControllerUI -I/root/PowerSupplyControllerUI -I/root/PowerSupplyControllerUI -I/usr/include/i386-linux-gnu/qt5 -I/usr/include/i386-linux-gnu/qt5/QtWidgets -I/usr/include/i386-linux-gnu/qt5/QtNetwork -I/usr/include/i386-linux-gnu/qt5/QtSql -I/usr/include/i386-linux-gnu/qt5/QtGui -I/usr/include/i386-linux-gnu/qt5/QtCore -I/usr/include/c++/4.9 -I/usr/include/i386-linux-gnu/c++/4.9 -I/usr/include/c++/4.9/backward -I/usr/lib/gcc/i586-linux-gnu/4.9/include -I/usr/local/include -I/usr/lib/gcc/i586-linux-gnu/4.9/include-fixed -I/usr/include/i386-linux-gnu -I/usr/include errorpage.h -o moc_errorpage.cpp
 
 moc_filecopyer.cpp: util.h \
 		cusdialog.h \
 		const_define.h \
 		filecopyer.h
-	/usr/lib/i386-linux-gnu/qt5/bin/moc $(DEFINES) -I/usr/lib/i386-linux-gnu/qt5/mkspecs/linux-g++ -I/home/thingword/PowerSupplyControllerUI -I/home/thingword/PowerSupplyControllerUI -I/home/thingword/PowerSupplyControllerUI -I/usr/include/i386-linux-gnu/qt5 -I/usr/include/i386-linux-gnu/qt5/QtWidgets -I/usr/include/i386-linux-gnu/qt5/QtSql -I/usr/include/i386-linux-gnu/qt5/QtGui -I/usr/include/i386-linux-gnu/qt5/QtCore -I/usr/include/c++/4.9 -I/usr/include/i386-linux-gnu/c++/4.9 -I/usr/include/c++/4.9/backward -I/usr/lib/gcc/i586-linux-gnu/4.9/include -I/usr/local/include -I/usr/lib/gcc/i586-linux-gnu/4.9/include-fixed -I/usr/include/i386-linux-gnu -I/usr/include filecopyer.h -o moc_filecopyer.cpp
+	/usr/lib/i386-linux-gnu/qt5/bin/moc $(DEFINES) -I/usr/lib/i386-linux-gnu/qt5/mkspecs/linux-g++ -I/root/PowerSupplyControllerUI -I/root/PowerSupplyControllerUI -I/root/PowerSupplyControllerUI -I/usr/include/i386-linux-gnu/qt5 -I/usr/include/i386-linux-gnu/qt5/QtWidgets -I/usr/include/i386-linux-gnu/qt5/QtNetwork -I/usr/include/i386-linux-gnu/qt5/QtSql -I/usr/include/i386-linux-gnu/qt5/QtGui -I/usr/include/i386-linux-gnu/qt5/QtCore -I/usr/include/c++/4.9 -I/usr/include/i386-linux-gnu/c++/4.9 -I/usr/include/c++/4.9/backward -I/usr/lib/gcc/i586-linux-gnu/4.9/include -I/usr/local/include -I/usr/lib/gcc/i586-linux-gnu/4.9/include-fixed -I/usr/include/i386-linux-gnu -I/usr/include filecopyer.h -o moc_filecopyer.cpp
 
 compiler_moc_source_make_all:
 compiler_moc_source_clean:
@@ -472,9 +481,10 @@ main.o: main.cpp mainwindow.h \
 		parseworker.h \
 		autostate.h \
 		serialworker.h \
+		firmware.h \
+		util.h \
 		errorpage.h \
 		filecopyer.h \
-		util.h \
 		frminput.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o main.cpp
 
@@ -565,7 +575,9 @@ serialworker.o: serialworker.cpp serialworker.h \
 		dpustatus.h \
 		pcstatus.h \
 		const_define.h \
-		util.h
+		firmware.h \
+		util.h \
+		cusdialog.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o serialworker.o serialworker.cpp
 
 frminput.o: frminput.cpp frminput.h \
@@ -581,6 +593,10 @@ filecopyer.o: filecopyer.cpp filecopyer.h \
 		cusdialog.h \
 		const_define.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o filecopyer.o filecopyer.cpp
+
+firmware.o: firmware.cpp firmware.h \
+		util.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o firmware.o firmware.cpp
 
 moc_mainwindow.o: moc_mainwindow.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_mainwindow.o moc_mainwindow.cpp

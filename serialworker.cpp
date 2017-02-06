@@ -2,13 +2,13 @@
 #include <QDebug>
 #include "util.h"
 #include "serial/serial.h"
-//#include "libserialport.h"
+#include <QDebug>
 #include <QByteArray>
 void SerialWorker::run()
 {
-	Util::list_ports();
+    //Util::list_ports();
     serial::Serial my_serial(COM6, 115200, serial::Timeout::simpleTimeout(2000));
-    //serial::Serial my_serial("/dev/ttyUSB0", 115200, serial::Timeout::simpleTimeout(2000));
+    //serial::Serial my_serial("/dev/ttyS0", 115200, serial::Timeout::simpleTimeout(2000));
 	if(my_serial.isOpen())
         qDebug()<<"has open";
 	else
@@ -28,6 +28,7 @@ void SerialWorker::run()
 
     updateFirmWareFlag =false;
     updateFirmWareState =0;
+    firmWare = NULL;
 	
 	while(true){
 
@@ -36,9 +37,10 @@ void SerialWorker::run()
             if(updateFirmWareState == 0)
             {
 				my_serial.flushOutput();
-                sleep(2);
+                sleep(1);
                 if(firmWare!=NULL){
                     delete firmWare;
+                    firmWare = NULL;
                 }
                 firmWare = new FirmWare(path,path_);
 				qDebug()<<path<<path_;
@@ -56,16 +58,19 @@ void SerialWorker::run()
                 unsigned int package =  0;
                 unsigned int version =  0;
                 while(updateDataParse(&array,&package,&state,&version)){
+
                 }
                 if(state == 1){
-					firmWare->setPackage(package,version);
-                    qDebug()<<"updateDataParse "<<package<<" size "<<firmWare->getSendSize()<<" version"<<version;
-                    my_serial.write((uint8_t *)firmWare->getSendTemp(),firmWare->getSendSize());
+                    if(firmWare != NULL){
+                        firmWare->setPackage(package,version);
+                        qDebug()<<"updateDataParse "<<package<<" size "<<firmWare->getSendSize()<<" version"<<version;
+                        my_serial.write((uint8_t *)firmWare->getSendTemp(),firmWare->getSendSize());
+                    }
                 }else if(state == 2){
 					qDebug()<<"update done";
 					updateFirmWareFlag = false;
 					updateFirmWareState =0;
-					cusdialog->changeStyle(UPDATE_END,1);
+                    cusdialog->changeStyle(UPDATE_END,1);
 				}
 
             }
@@ -88,11 +93,17 @@ void SerialWorker::run()
                 send[6] = 0;
             }
 
-            if(pcStatus->toppleControl){
-                send[7] = 1;
+            if(!pcStatus->state){
+                send[7] = 2;
             }else{
-                send[7] = 0;
+                if(pcStatus->toppleControl)
+                {
+                    send[7] = 1;
+                }else{
+                    send[7] = 0;
+                }
             }
+            //qDebug()<<"pcStatus->toppleControl"<<send[7];
             my_serial.write((uint8_t *)send,8);
         }
 	}
@@ -112,8 +123,8 @@ bool SerialWorker::dataParse(QByteArray *array,DpuStatus *dpuStatus)
 				break;
 			}else{
 				{
-					dpuStatus->temp_a =	(((uint8_t)array->at(i+5)<<8) + (uint8_t)array->at(i+4))/100;
-					dpuStatus->temp_b =	(((uint8_t)array->at(i+7)<<8) + (uint8_t)array->at(i+6))/100;
+                    dpuStatus->temp_a =	(((uint8_t)array->at(i+5)<<8) + (uint8_t)array->at(i+4))/10;
+                    dpuStatus->temp_b =	(((uint8_t)array->at(i+7)<<8) + (uint8_t)array->at(i+6))/10;
 					dpuStatus->ua =	(((uint8_t)array->at(i+9)<<8) + (uint8_t)array->at(i+8))/100;
 					dpuStatus->ia =	(((uint8_t)array->at(i+11)<<8) + (uint8_t)array->at(i+10))/100;
 					dpuStatus->power = (((uint8_t)array->at(i+15)<<24)+ ((uint8_t)array->at(i+14)<<16) + ((uint8_t)array->at(i+13)<<8) + (uint8_t)array->at(i+12))/100;

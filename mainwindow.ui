@@ -142,7 +142,7 @@ border-color: rgb(0, 170, 0);
 gridline-color: rgb(112, 255, 129);</string>
     </property>
     <property name="currentIndex">
-     <number>1</number>
+     <number>2</number>
     </property>
     <widget class="QWidget" name="setPage">
      <widget class="QLabel" name="label_22">
@@ -725,7 +725,7 @@ color: rgb(255, 255, 255);</string>
         <rect>
          <x>90</x>
          <y>50</y>
-         <width>51</width>
+         <width>71</width>
          <height>31</height>
         </rect>
        </property>
@@ -748,7 +748,7 @@ color: rgb(255, 255, 255);</string>
         <rect>
          <x>90</x>
          <y>90</y>
-         <width>51</width>
+         <width>71</width>
          <height>31</height>
         </rect>
        </property>
@@ -769,16 +769,16 @@ color: rgb(255, 255, 255);</string>
       <widget class="QLabel" name="label_10">
        <property name="geometry">
         <rect>
-         <x>150</x>
+         <x>160</x>
          <y>50</y>
-         <width>31</width>
+         <width>41</width>
          <height>31</height>
         </rect>
        </property>
        <property name="font">
         <font>
-         <family>微软雅黑</family>
-         <pointsize>18</pointsize>
+         <family>Sans</family>
+         <pointsize>14</pointsize>
         </font>
        </property>
        <property name="styleSheet">
@@ -792,16 +792,16 @@ color: rgb(255, 255, 255);</string>
       <widget class="QLabel" name="label_11">
        <property name="geometry">
         <rect>
-         <x>140</x>
+         <x>160</x>
          <y>90</y>
-         <width>61</width>
+         <width>41</width>
          <height>31</height>
         </rect>
        </property>
        <property name="font">
         <font>
-         <family>微软雅黑</family>
-         <pointsize>18</pointsize>
+         <family>Sans</family>
+         <pointsize>14</pointsize>
         </font>
        </property>
        <property name="styleSheet">
@@ -932,14 +932,14 @@ color: rgb(139, 195, 74);</string>
         <rect>
          <x>160</x>
          <y>130</y>
-         <width>41</width>
+         <width>51</width>
          <height>31</height>
         </rect>
        </property>
        <property name="font">
         <font>
-         <family>微软雅黑</family>
-         <pointsize>18</pointsize>
+         <family>Sans</family>
+         <pointsize>14</pointsize>
         </font>
        </property>
        <property name="styleSheet">
@@ -978,7 +978,7 @@ color: rgb(255, 255, 255);</string>
         <rect>
          <x>90</x>
          <y>130</y>
-         <width>51</width>
+         <width>61</width>
          <height>31</height>
         </rect>
        </property>
@@ -1076,8 +1076,8 @@ color: rgb(255, 255, 255);</string>
        </property>
        <property name="font">
         <font>
-         <family>微软雅黑</family>
-         <pointsize>18</pointsize>
+         <family>Sans</family>
+         <pointsize>14</pointsize>
         </font>
        </property>
        <property name="styleSheet">
@@ -1111,6 +1111,22 @@ color: rgb(255, 17, 17);</string>
         <string>正常生产</string>
        </property>
       </widget>
+      <widget class="QLabel" name="netLabel_2">
+       <property name="geometry">
+        <rect>
+         <x>360</x>
+         <y>15</y>
+         <width>27</width>
+         <height>27</height>
+        </rect>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">background-color: rgb(84, 110, 122);</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
       <zorder>label_6</zorder>
       <zorder>label_7</zorder>
       <zorder>displayTempLabel</zorder>
@@ -1130,6 +1146,7 @@ color: rgb(255, 17, 17);</string>
       <zorder>label_29</zorder>
       <zorder>stateLabel</zorder>
       <zorder>stateErrLabel</zorder>
+      <zorder>netLabel_2</zorder>
      </widget>
      <widget class="QLineEdit" name="fileNameEdit">
       <property name="geometry">
@@ -1291,7 +1308,7 @@ color: rgb(255, 255, 255);</string>
         <rect>
          <x>90</x>
          <y>50</y>
-         <width>51</width>
+         <width>61</width>
          <height>31</height>
         </rect>
        </property>
@@ -1314,7 +1331,7 @@ color: rgb(255, 255, 255);</string>
         <rect>
          <x>90</x>
          <y>90</y>
-         <width>51</width>
+         <width>61</width>
          <height>31</height>
         </rect>
        </property>
@@ -1335,7 +1352,7 @@ color: rgb(255, 255, 255);</string>
       <widget class="QLabel" name="label_46">
        <property name="geometry">
         <rect>
-         <x>150</x>
+         <x>160</x>
          <y>50</y>
          <width>31</width>
          <height>31</height>
@@ -1343,8 +1360,8 @@ color: rgb(255, 255, 255);</string>
        </property>
        <property name="font">
         <font>
-         <family>微软雅黑</family>
-         <pointsize>18</pointsize>
+         <family>Sans</family>
+         <pointsize>14</pointsize>
         </font>
        </property>
        <property name="styleSheet">
@@ -1358,16 +1375,16 @@ color: rgb(255, 255, 255);</string>
       <widget class="QLabel" name="label_47">
        <property name="geometry">
         <rect>
-         <x>140</x>
+         <x>160</x>
          <y>90</y>
-         <width>61</width>
+         <width>41</width>
          <height>31</height>
         </rect>
        </property>
        <property name="font">
         <font>
-         <family>微软雅黑</family>
-         <pointsize>18</pointsize>
+         <family>Sans</family>
+         <pointsize>14</pointsize>
         </font>
        </property>
        <property name="styleSheet">
@@ -1550,8 +1567,8 @@ color: rgb(255, 255, 255);</string>
        </property>
        <property name="font">
         <font>
-         <family>微软雅黑</family>
-         <pointsize>18</pointsize>
+         <family>Sans</family>
+         <pointsize>14</pointsize>
         </font>
        </property>
        <property name="styleSheet">
@@ -1567,7 +1584,7 @@ color: rgb(255, 255, 255);</string>
         <rect>
          <x>90</x>
          <y>130</y>
-         <width>51</width>
+         <width>61</width>
          <height>31</height>
         </rect>
        </property>
@@ -1619,8 +1636,8 @@ color: rgb(255, 255, 255);</string>
        </property>
        <property name="font">
         <font>
-         <family>微软雅黑</family>
-         <pointsize>18</pointsize>
+         <family>Sans</family>
+         <pointsize>14</pointsize>
         </font>
        </property>
        <property name="styleSheet">
@@ -1652,6 +1669,22 @@ color: rgb(255, 17, 17);</string>
        </property>
        <property name="text">
         <string>正常生产</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="netLabel">
+       <property name="geometry">
+        <rect>
+         <x>360</x>
+         <y>15</y>
+         <width>27</width>
+         <height>27</height>
+        </rect>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">background-color: rgb(84, 110, 122);</string>
+       </property>
+       <property name="text">
+        <string/>
        </property>
       </widget>
      </widget>
@@ -2007,7 +2040,7 @@ background-color: rgb(0, 150, 136);
       <property name="font">
        <font>
         <family>Sans</family>
-        <pointsize>18</pointsize>
+        <pointsize>12</pointsize>
        </font>
       </property>
       <property name="focusPolicy">
@@ -2033,7 +2066,7 @@ QPushButton:pressed{background-color: rgba(0, 77, 64,  255);  border: 1px solid 
       <property name="font">
        <font>
         <family>Sans</family>
-        <pointsize>18</pointsize>
+        <pointsize>12</pointsize>
        </font>
       </property>
       <property name="focusPolicy">
@@ -2059,7 +2092,7 @@ QPushButton:pressed{background-color: rgba(0, 77, 64,  255);  border: 1px solid 
       <property name="font">
        <font>
         <family>Sans</family>
-        <pointsize>18</pointsize>
+        <pointsize>12</pointsize>
        </font>
       </property>
       <property name="focusPolicy">
@@ -2071,6 +2104,32 @@ QPushButton:pressed{background-color: rgba(0, 77, 64,  255);  border: 1px solid 
       </property>
       <property name="text">
        <string>固件升级</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="fileUploadButton">
+      <property name="geometry">
+       <rect>
+        <x>770</x>
+        <y>150</y>
+        <width>111</width>
+        <height>71</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Sans</family>
+        <pointsize>12</pointsize>
+       </font>
+      </property>
+      <property name="focusPolicy">
+       <enum>Qt::NoFocus</enum>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QPushButton{background-color: rgba(38, 166, 154,  255);  border: 1px solid rgb(124, 124, 124); border-radius:5px;}
+QPushButton:pressed{background-color: rgba(0, 77, 64,  255);  border: 1px solid rgb(124, 124, 124); border-radius:5px;}</string>
+      </property>
+      <property name="text">
+       <string>工艺文件上传</string>
       </property>
      </widget>
     </widget>

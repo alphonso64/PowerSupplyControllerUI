@@ -7,6 +7,6 @@ int main(int argc, char *argv[])
     MainWindow w;
     w.show();
     frmInput::Instance()->Init("control", "black", 10, 10);
-    //a.setOverrideCursor(Qt::BlankCursor);
+    a.setOverrideCursor(Qt::BlankCursor);
     return a.exec();
 }

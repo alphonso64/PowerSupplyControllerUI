@@ -8,4 +8,5 @@ PcStatus::PcStatus()
     action = NOAction;
     actionState = ActionState_UNDO;
     actionInfo = "";
+    state = false;
 }
