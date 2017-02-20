@@ -7,8 +7,8 @@
 void SerialWorker::run()
 {
     //Util::list_ports();
-    serial::Serial my_serial(COM6, 115200, serial::Timeout::simpleTimeout(2000));
-    //serial::Serial my_serial("/dev/ttyS0", 115200, serial::Timeout::simpleTimeout(2000));
+    //serial::Serial my_serial(COM6, 115200, serial::Timeout::simpleTimeout(2000));
+    serial::Serial my_serial("/dev/ttyS0", 115200, serial::Timeout::simpleTimeout(2000));
 	if(my_serial.isOpen())
         qDebug()<<"has open";
 	else
@@ -103,7 +103,7 @@ void SerialWorker::run()
                     send[7] = 0;
                 }
             }
-            //qDebug()<<"pcStatus->toppleControl"<<send[7];
+//            qDebug()<<"pcStatus->toppleControl"<<send[7];
             my_serial.write((uint8_t *)send,8);
         }
 	}

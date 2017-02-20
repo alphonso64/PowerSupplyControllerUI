@@ -21,10 +21,13 @@ void ParseWorker::run()
     {
         int action = autostate.root[i]["action"].asInt();
         int actionSta = autostate.root[i]["ac_sta"].asInt();
+        QString content = QString::fromStdString(autostate.root[i]["ac_content"].asString());
         if(action == NOAction){
             if(flag!= 0){
                 if(actionSta == ActionState_DONE){
+                    //qDebug()<<content;
                     state->endIndex = i;
+                    state->content =content;
                     autostate.stage.append(*state);
                     state = new State();
                     state->startIndex = i;

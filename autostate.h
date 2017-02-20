@@ -10,6 +10,7 @@ public :
     int endIndex;
     int actionStartIndex;
     int actionID;
+    QString content;
 };
 
 class AutoState

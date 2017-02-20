@@ -15,6 +15,9 @@
 #define ActionCControl 104
 #define ActionDControl 105
 
+#define MAX_POWER_VALUE 100
+#define MIN_POWER_VALUE 0
+
 #define EMERGENCY_STOP "紧急停机"
 #define STATE_STANDBY "待机"
 #define STATE_FAULT          "设备故障"
@@ -59,8 +62,8 @@
 #define UDISK_PATH_PREFIX "/media/root/"
 #define UPDATE_TEMP_PATH "/root/program/temp/UpdateFile"
 
-#define NET_PIC_PATH "/root/wifi.png"
-#define NETOFF_PIC_PATH "/root/nowifi.png"
+#define NET_PIC_PATH ":/new/png/wifi.png"
+#define NETOFF_PIC_PATH ":/new/png/wifi_off.png"
 
 #define UDISK_UNPLUGIN "未插入u盘"
 #define NO_UPDATE_FILE_DETECT "未检测到更新文件"

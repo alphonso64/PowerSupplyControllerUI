@@ -42,6 +42,7 @@ void RecorderWorker::actionRecord()
     content["action"] = pcStatus->action;
     content["ac_sta"] = pcStatus->actionState;
     content["ac_info"] = pcStatus->actionInfo.toStdString();
+    content["ac_content"] = " ";
     root->append(content);
     m_lock.unlock();
 }
@@ -57,6 +58,23 @@ void RecorderWorker::timeOut()
     content["action"] = pcStatus->action;
     content["ac_sta"] = pcStatus->actionState;
     content["ac_info"] = pcStatus->actionInfo.toStdString();
+    content["ac_content"] = " ";
+    root->append(content);
+    m_lock.unlock();
+}
+
+void RecorderWorker::actionRecord(QString cont)
+{
+    m_lock.lock();
+    Json::Value content;
+//    content["index"] = cnt++;
+    content["level"] = pcStatus->powerlevel;
+    content["power"] = dpuStatus->power;
+    content["temp"] = dpuStatus->temp_a;
+    content["action"] = pcStatus->action;
+    content["ac_sta"] = pcStatus->actionState;
+    content["ac_info"] = pcStatus->actionInfo.toStdString();
+    content["ac_content"] = cont.toStdString();
     root->append(content);
     m_lock.unlock();
 }

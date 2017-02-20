@@ -8,7 +8,7 @@
 #include "util.h"
 #include <QStringListModel>
 
-#define SoftWare_Version "V1.3"
+#define SoftWare_Version "V1.4"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -54,6 +54,9 @@ MainWindow::MainWindow(QWidget *parent) :
     nettimer->setInterval(10000);
     nettimer->start();
 
+    acctimer = new QTimer();
+    acctimer->setInterval(1000);
+
     ui->fileUploadButton->setVisible(false);
     ui->autoStartButton->setEnabled(false);
 
@@ -72,8 +75,10 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->recordStartButton, SIGNAL(toggled(bool)), this, SLOT(recordStartClick(bool)));
     connect(timer, SIGNAL(timeout()), this, SLOT(timerOut()));
     connect(nettimer, SIGNAL(timeout()), this, SLOT(stateUpload()));
+    connect(acctimer, SIGNAL(timeout()), this, SLOT(acctimerOut()));
     connect(displaytimer, SIGNAL(timeout()), this, SLOT(display()));
     connect(this, SIGNAL(recordStatus()), recorder, SLOT(actionRecord()));
+    connect(this, SIGNAL(recordStatus(QString)), recorder, SLOT(actionRecord(QString)));
     connect(ui->openFileButton, SIGNAL(clicked()), this, SLOT(fileOpen()));
     connect(parser, SIGNAL(parsed()), this, SLOT(fileParsed()));
     connect(autotimer, SIGNAL(timeout()), this, SLOT(autoProcess()));
@@ -90,8 +95,38 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->restartButton, SIGNAL(clicked()), this, SLOT(restartButtonClick()));
     connect(ui->fileUploadButton, SIGNAL(clicked()), this, SLOT(fileUpload()));
     connect(ui->firmwareUpdateButton, SIGNAL(clicked()), this, SLOT(firmwarepdateButtonClick()));
+    connect(ui->manualAddButton, SIGNAL(clicked()), this, SLOT(manualAdd()));
+    connect(ui->manualMinusButton, SIGNAL(clicked()), this, SLOT(manualMinus()));
 
     //qsrand(QTime(0,0,0).secsTo(QTime::currentTime()));
+}
+
+void MainWindow::manualAdd()
+{
+    int value = ui->powerSlider->value();
+    if(value<MAX_POWER_VALUE)
+    {
+        value++;
+    }
+    ui->powerSlider->setValue(value);
+    setPowerValue(value);
+}
+
+void MainWindow::manualMinus()
+{
+    int value = ui->powerSlider->value();
+    if(value>MIN_POWER_VALUE)
+    {
+        value--;
+    }
+    ui->powerSlider->setValue(value);
+    setPowerValue(value);
+}
+
+void MainWindow::acctimerOut()
+{
+    acctime = acctime.addSecs(1);
+    ui->acctimelabel->setText(acctime.toString("hh:mm:ss"));
 }
 
 void MainWindow::fileUploadfinished()
@@ -170,31 +205,30 @@ void MainWindow::netfinished()
 
 void MainWindow::stateUpload()
 {
-    if(!netStartFlag){
-        netStartFlag = true;
-        qDebug()<<"stateUpload";
-        Json::FastWriter writer;
-        Json::Value status;
-        status["temp_a"] = QString::number(dpuStatus.temp_a).toStdString();
-        status["temp_b"] = QString::number(dpuStatus.temp_b).toStdString();
-        status["ua"] = QString::number(dpuStatus.ua).toStdString();
-        status["ia"] = QString::number(dpuStatus.ia).toStdString();
-        status["power"] = QString::number(dpuStatus.power).toStdString();
-        status["errorcode"] = QString::number(dpuStatus.errorcode).toStdString();
-        status["powerlevel"] = QString::number(pcStatus.powerlevel).toStdString();
-        std::string json_file = writer.write(status);
+//    if(!netStartFlag){
+//        netStartFlag = true;
+//        qDebug()<<"stateUpload";
+//        Json::FastWriter writer;
+//        Json::Value status;
+//        status["temp_a"] = QString::number(dpuStatus.temp_a).toStdString();
+//        status["temp_b"] = QString::number(dpuStatus.temp_b).toStdString();
+//        status["ua"] = QString::number(dpuStatus.ua).toStdString();
+//        status["ia"] = QString::number(dpuStatus.ia).toStdString();
+//        status["power"] = QString::number(dpuStatus.power).toStdString();
+//        status["errorcode"] = QString::number(dpuStatus.errorcode).toStdString();
+//        status["powerlevel"] = QString::number(pcStatus.powerlevel).toStdString();
+//        std::string json_file = writer.write(status);
 
-        QUrl url("http://10.18.1.24:8080/PowerMonitor/rest/api/uploadStatus");
-        QByteArray array(json_file.c_str());
-        QNetworkRequest request(url);
-        request.setHeader(QNetworkRequest::ContentTypeHeader,QVariant("application/json"));
-        mutex.lock();
-        state_reply = nam->post(request,array);
-        mutex.unlock();
-        connect(state_reply, SIGNAL(finished()), this, SLOT(netfinished()));
+//        QUrl url("http://10.18.1.24:8080/PowerMonitor/rest/api/uploadStatus");
+//        QByteArray array(json_file.c_str());
+//        QNetworkRequest request(url);
+//        request.setHeader(QNetworkRequest::ContentTypeHeader,QVariant("application/json"));
+//        mutex.lock();
+//        state_reply = nam->post(request,array);
+//        mutex.unlock();
+//        connect(state_reply, SIGNAL(finished()), this, SLOT(netfinished()));
 
-    }
-
+//    }
 }
 
 void MainWindow::fileRecorded()
@@ -241,7 +275,10 @@ void MainWindow::errorHandle(int code)
                 ui->manualtimelabel->setText("");
                 ui->timeEdit->setText("");
                 timer->stop();
+
             }
+            ui->acctimelabel->setText("");
+            acctimer->stop();
             ui->manualStartButton->setEnabled(false);
         }
         errorPage->setMsg(EMERGENCY_STOP);
@@ -266,6 +303,8 @@ void MainWindow::errorHandle(int code)
                 ui->timeEdit->setText("");
                 timer->stop();
             }
+            ui->acctimelabel->setText("");
+            acctimer->stop();
             ui->manualStartButton->setEnabled(false);
         }
         if(autoStartFlag){
@@ -432,15 +471,15 @@ void MainWindow::uiInit()
     ui->infoButton->setEnabled(true);
     ui->stackedWidget->setCurrentIndex(0);
 
-    ui->powerSlider->setMinimum(0);
-    ui->powerSlider->setMaximum(150);
+    ui->powerSlider->setMinimum(MIN_POWER_VALUE);
+    ui->powerSlider->setMaximum(MAX_POWER_VALUE);
     ui->powerSlider->setValue(0);
-    ui->powerSliderLabel->setText("0/150kW");
+    ui->powerSliderLabel->setText("0/100%");
 
-    ui->powerSlider_2->setMinimum(0);
-    ui->powerSlider_2->setMaximum(150);
+    ui->powerSlider_2->setMinimum(MIN_POWER_VALUE);
+    ui->powerSlider_2->setMaximum(MAX_POWER_VALUE);
     ui->powerSlider_2->setValue(0);
-    ui->powerSliderLabel_2->setText("0/150kW");
+    ui->powerSliderLabel_2->setText("0/100%");
     ui->powerSlider_2->setEnabled(false);
     ui->manualStartButton->setChecked(false);
 
@@ -481,6 +520,9 @@ void MainWindow::uiInit()
 
     parser = new ParseWorker();
     copyer = new FileCopyer();
+
+    rfreader = new RFReader();
+    rfreader->start();
 
     serialWorker = new SerialWorker();
 	serialWorker->dpuStatus = &this->dpuStatus;
@@ -615,7 +657,10 @@ void MainWindow::autoProcess()
             warn_CusDialog->reject();
         }
         if(state.actionID == ActionAControl){
-             auto_CusDialog = new CusDialog(ActionAControl_TEXT,1);
+             QString val = ActionAControl_TEXT;
+             val.append("\n");
+             val.append(state.content);
+             auto_CusDialog = new CusDialog(val,1);
              pcStatus.warningControl = true;
              if(0 == auto_CusDialog->exec())
               {
@@ -721,9 +766,9 @@ void MainWindow::fileOpen()
 
 void MainWindow::setPowerValue(int value)
 {
-    ui->powerSliderLabel->setText(QString::number(value)+"/150kW");
+    ui->powerSliderLabel->setText(QString::number(value)+"/100%");
     ui->powerSlider_2->setValue(value);
-    ui->powerSliderLabel_2->setText(QString::number(value)+"/150kW");
+    ui->powerSliderLabel_2->setText(QString::number(value)+"/100%");
     pcStatus.powerlevel = value;
 }
 
@@ -794,6 +839,15 @@ void MainWindow::recordStartClick(bool flag)
         recorder->exit();
         ui->fileNameEdit->setEnabled(true);
         pcStatus.state  = false;
+        ui->acctimelabel->setText("");
+        acctimer->stop();
+        if(startTimerFlag){
+            startTimerFlag = false;
+            ui->manualStartButton->setText(TIME_START_TEXT);
+            ui->manualtimelabel->setText("");
+            ui->timeEdit->setText("");
+            timer->stop();
+        }
     }else{
         QString fileName = ui->fileNameEdit->text();
         if(fileName.length() == 0){
@@ -808,6 +862,8 @@ void MainWindow::recordStartClick(bool flag)
         ui->recordStartButton->setText(End_Record__TEXT);
         recorder->fileName = fileName;
         recorder->start();
+        acctime.setHMS(0,0,0);
+        acctimer->start();
     }
 }
 
@@ -852,6 +908,18 @@ void MainWindow::manualStartClick(bool flag)
 
 void MainWindow::setButtonClick()
 {
+    if(recordFlag){
+        CusDialog cusDialog("正在手动记录模式下，无法切换自动模式",1);
+        cusDialog.exec();
+        return;
+    }
+    if(autoStartFlag){
+        warn_CusDialog = new  CusDialog("正在自动模式下，无法切换手动模式",1);
+        warn_CusDialog->exec();
+        delete warn_CusDialog;
+        warn_CusDialog = NULL;
+        return;
+    }
     ui->stackedWidget->setCurrentIndex(0);
     ui->setButton->setEnabled(false);
     ui->manualButton->setEnabled(true);
@@ -891,6 +959,18 @@ void MainWindow::autoButtonClick()
 
 void MainWindow::infoButtonClick()
 {
+    if(recordFlag){
+        CusDialog cusDialog("正在手动记录模式下，无法切换自动模式",1);
+        cusDialog.exec();
+        return;
+    }
+    if(autoStartFlag){
+        warn_CusDialog = new  CusDialog("正在自动模式下，无法切换手动模式",1);
+        warn_CusDialog->exec();
+        delete warn_CusDialog;
+        warn_CusDialog = NULL;
+        return;
+    }
     ui->stackedWidget->setCurrentIndex(3);
     ui->setButton->setEnabled(true);
     ui->manualButton->setEnabled(true);
@@ -900,68 +980,88 @@ void MainWindow::infoButtonClick()
 
 void MainWindow::actionGroupButtonClick(int id)
 {
-    if(timer->isActive()){
+    if(timer->isActive())
+    {
         ui->manualtimelabel->setText("");
         startTimerFlag = false;
         ui->manualStartButton->setText(Start_TEXT);
         timer->stop();
     }
-    if(recordFlag){
+    if(recordFlag)
+    {
        emit(recordStatus());
-    }
-    if(id == manualAID){
-        CusDialog cusdialog(ActionAControl_TEXT,0);
-        pcStatus.action = ActionAControl;
-        pcStatus.actionState = ActionState_UNDO;
-        int val = cusdialog.exec();
-        if(val == 0){
-            pcStatus.action = NOAction;
-            pcStatus.actionState = ActionState_DONE;
-        }else if(val == -1){
-            pcStatus.action = NOAction;
+        if(id == manualAID)
+        {
+            AddDialog addAction;
+            pcStatus.action = ActionAControl;
             pcStatus.actionState = ActionState_UNDO;
-        }
-    }else if(id == manualBID){
-        pcStatus.toppleControl = true;
-        CusDialog cusdialog(ActionBControl_TEXT,0);
-        pcStatus.action = ActionBControl;
-        pcStatus.actionState = ActionState_UNDO;
-        int val = cusdialog.exec();
-        pcStatus.toppleControl = false;
-        if(val == 0){
-            pcStatus.action = NOAction;
-            pcStatus.actionState = ActionState_DONE;
-        }else if(val == -1){
-            pcStatus.action = NOAction;
+            int val = addAction.exec();
+            if(val == 0)
+            {
+                qDebug()<<"ActionState_DONE";
+                pcStatus.action = NOAction;
+                pcStatus.actionState = ActionState_DONE;
+                emit(recordStatus(addAction.content));
+            }else if(val == -1)
+            {
+                qDebug()<<"ActionState_UNDO";
+                pcStatus.action = NOAction;
+                pcStatus.actionState = ActionState_UNDO;
+                emit(recordStatus());
+            }
+
+        }else if(id == manualBID)
+        {
+            pcStatus.toppleControl = true;
+            CusDialog cusdialog(ActionBControl_TEXT,0);
+            pcStatus.action = ActionBControl;
             pcStatus.actionState = ActionState_UNDO;
-        }
-    }else if(id == manualCID){
-        CusDialog cusdialog(ActionCControl_TEXT,0);
-        pcStatus.action = ActionCControl;
-        pcStatus.actionState = ActionState_UNDO;
-        int val = cusdialog.exec();
-        if(val == 0){
-            pcStatus.action = NOAction;
-            pcStatus.actionState = ActionState_DONE;
-        }else if(val == -1){
-            pcStatus.action = NOAction;
+            int val = cusdialog.exec();
+            pcStatus.toppleControl = false;
+            if(val == 0)
+            {
+                pcStatus.action = NOAction;
+                pcStatus.actionState = ActionState_DONE;
+            }else if(val == -1)
+            {
+                pcStatus.action = NOAction;
+                pcStatus.actionState = ActionState_UNDO;
+            }
+            emit(recordStatus());
+        }else if(id == manualCID)
+        {
+            CusDialog cusdialog(ActionCControl_TEXT,0);
+            pcStatus.action = ActionCControl;
             pcStatus.actionState = ActionState_UNDO;
-        }
-    }else if(id == manualDID){
-        CusDialog cusdialog(ActionDControl_TEXT,0);
-        pcStatus.action = ActionDControl;
-        pcStatus.actionState = ActionState_UNDO;
-        int val = cusdialog.exec();
-        if(val == 0){
-            pcStatus.action = NOAction;
-            pcStatus.actionState = ActionState_DONE;
-        }else if(val == -1){
-            pcStatus.action = NOAction;
+            int val = cusdialog.exec();
+            if(val == 0)
+            {
+                pcStatus.action = NOAction;
+                pcStatus.actionState = ActionState_DONE;
+            }else if(val == -1)
+            {
+                pcStatus.action = NOAction;
+                pcStatus.actionState = ActionState_UNDO;
+            }
+            emit(recordStatus());
+        }else if(id == manualDID)
+        {
+            CusDialog cusdialog(ActionDControl_TEXT,0);
+            pcStatus.action = ActionDControl;
             pcStatus.actionState = ActionState_UNDO;
+            int val = cusdialog.exec();
+            if(val == 0)
+            {
+                pcStatus.action = NOAction;
+                pcStatus.actionState = ActionState_DONE;
+            }else if(val == -1)
+            {
+                pcStatus.action = NOAction;
+                pcStatus.actionState = ActionState_UNDO;
+            }
+            emit(recordStatus());
         }
-    }
-    if(recordFlag){
-       emit(recordStatus());
+
     }
 }
 

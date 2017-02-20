@@ -292,7 +292,7 @@ QPushButton:checked{background-color: rgba(38, 166, 154, 255);  border: 1px soli
         <x>30</x>
         <y>200</y>
         <width>921</width>
-        <height>381</height>
+        <height>411</height>
        </rect>
       </property>
       <property name="font">
@@ -302,14 +302,14 @@ QPushButton:checked{background-color: rgba(38, 166, 154, 255);  border: 1px soli
        </font>
       </property>
       <property name="styleSheet">
-       <string notr="true">QGroupBox {
+       <string notr="true">#groupBox {
 background-color: qlineargradient(spread:pad, x1:0.489, y1:1, x2:0.505682, y2:0.17, stop:0 rgba(128, 203, 196, 255), stop:1 rgba(255, 255, 255, 255));
     border: 2px solid rgb(0, 77, 64);
     border-radius: 10px;
     margin-top: 1em;
 }
 
-QGroupBox::title {
+#groupBox::title {
     subcontrol-origin: margin;
     left: 10px;
     padding: 0 3px 0 3px;
@@ -324,10 +324,10 @@ QGroupBox::title {
       <widget class="QSlider" name="powerSlider">
        <property name="geometry">
         <rect>
-         <x>160</x>
-         <y>270</y>
-         <width>581</width>
-         <height>41</height>
+         <x>150</x>
+         <y>315</y>
+         <width>451</width>
+         <height>61</height>
         </rect>
        </property>
        <property name="styleSheet">
@@ -343,7 +343,7 @@ QSlider::handle:horizontal {
 background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #b4b4b4, stop:1 #8f8f8f); 
 border: 1px solid #5c5c5c; 
 width: 30px; 
-margin: -8px 0px; 
+margin: -18px 0px; 
 } </string>
        </property>
        <property name="orientation">
@@ -353,8 +353,8 @@ margin: -8px 0px;
       <widget class="QLabel" name="label_16">
        <property name="geometry">
         <rect>
-         <x>50</x>
-         <y>270</y>
+         <x>40</x>
+         <y>320</y>
          <width>101</width>
          <height>41</height>
         </rect>
@@ -375,8 +375,8 @@ margin: -8px 0px;
       <widget class="QLabel" name="powerSliderLabel">
        <property name="geometry">
         <rect>
-         <x>760</x>
-         <y>270</y>
+         <x>770</x>
+         <y>320</y>
          <width>121</width>
          <height>41</height>
         </rect>
@@ -397,211 +397,320 @@ background-color: rgb(0, 150, 136);
         <string>150/150kW</string>
        </property>
       </widget>
-      <widget class="QPushButton" name="manualStartButton">
+      <widget class="QGroupBox" name="groupBox_3">
        <property name="geometry">
         <rect>
-         <x>50</x>
-         <y>100</y>
-         <width>111</width>
-         <height>91</height>
+         <x>40</x>
+         <y>90</y>
+         <width>411</width>
+         <height>201</height>
         </rect>
        </property>
-       <property name="font">
-        <font>
-         <family>微软雅黑</family>
-         <pointsize>24</pointsize>
-        </font>
-       </property>
-       <property name="focusPolicy">
-        <enum>Qt::NoFocus</enum>
-       </property>
        <property name="styleSheet">
-        <string notr="true">QPushButton{background-color: rgba(38, 166, 154,  255);  border: 1px solid rgb(124, 124, 124); border-radius:5px;}
+        <string notr="true">QGroupBox {
+	background-color: rgba(255, 255, 255, 0);
+    border: 2px solid rgb(84, 110, 122);
+    border-radius: 5px;
+    margin-top: 1em;
+}
+</string>
+       </property>
+       <property name="title">
+        <string/>
+       </property>
+       <widget class="QPushButton" name="manualStartButton">
+        <property name="geometry">
+         <rect>
+          <x>20</x>
+          <y>80</y>
+          <width>111</width>
+          <height>91</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <family>微软雅黑</family>
+          <pointsize>24</pointsize>
+         </font>
+        </property>
+        <property name="focusPolicy">
+         <enum>Qt::NoFocus</enum>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QPushButton{background-color: rgba(38, 166, 154,  255);  border: 1px solid rgb(124, 124, 124); border-radius:5px;}
 QPushButton:pressed{background-color: rgba(0, 77, 64,  255);  border: 1px solid rgb(124, 124, 124); border-radius:5px;}</string>
-       </property>
-       <property name="text">
-        <string>计时</string>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_20">
-       <property name="geometry">
-        <rect>
-         <x>180</x>
-         <y>100</y>
-         <width>51</width>
-         <height>41</height>
-        </rect>
-       </property>
-       <property name="font">
-        <font>
-         <family>微软雅黑</family>
-         <pointsize>18</pointsize>
-        </font>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">background-color: rgba(255, 255, 255, 0);</string>
-       </property>
-       <property name="text">
-        <string>时间</string>
-       </property>
-      </widget>
-      <widget class="QPushButton" name="manualactionAButton">
-       <property name="geometry">
-        <rect>
-         <x>510</x>
-         <y>100</y>
-         <width>81</width>
-         <height>91</height>
-        </rect>
-       </property>
-       <property name="font">
-        <font>
-         <family>微软雅黑</family>
-         <pointsize>18</pointsize>
-        </font>
-       </property>
-       <property name="focusPolicy">
-        <enum>Qt::NoFocus</enum>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">QPushButton{background-color: rgba(84, 110, 122, 255);  border: 1px solid rgb(124, 124, 124); border-radius:5px;}
-QPushButton:pressed{background-color: rgba(38, 166, 154, 255);  border: 1px solid rgb(124, 124, 124); border-radius:5px;}</string>
-       </property>
-       <property name="text">
-        <string>加料</string>
-       </property>
-      </widget>
-      <widget class="QPushButton" name="manualactionBButton">
-       <property name="geometry">
-        <rect>
-         <x>610</x>
-         <y>100</y>
-         <width>81</width>
-         <height>91</height>
-        </rect>
-       </property>
-       <property name="font">
-        <font>
-         <family>微软雅黑</family>
-         <pointsize>18</pointsize>
-        </font>
-       </property>
-       <property name="focusPolicy">
-        <enum>Qt::NoFocus</enum>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">QPushButton{background-color: rgba(84, 110, 122, 255);  border: 1px solid rgb(124, 124, 124); border-radius:5px;}
-QPushButton:pressed{background-color: rgba(38, 166, 154, 255);  border: 1px solid rgb(124, 124, 124); border-radius:5px;}</string>
-       </property>
-       <property name="text">
-        <string>倒包</string>
-       </property>
-      </widget>
-      <widget class="QPushButton" name="manualactionCButton">
-       <property name="geometry">
-        <rect>
-         <x>710</x>
-         <y>100</y>
-         <width>81</width>
-         <height>91</height>
-        </rect>
-       </property>
-       <property name="font">
-        <font>
-         <family>Sans</family>
-         <pointsize>18</pointsize>
-        </font>
-       </property>
-       <property name="focusPolicy">
-        <enum>Qt::NoFocus</enum>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">QPushButton{background-color: rgba(84, 110, 122, 255);  border: 1px solid rgb(124, 124, 124); border-radius:5px;}
-QPushButton:pressed{background-color: rgba(38, 166, 154, 255);  border: 1px solid rgb(124, 124, 124); border-radius:5px;}</string>
-       </property>
-       <property name="text">
-        <string>捞渣</string>
-       </property>
-      </widget>
-      <widget class="QPushButton" name="manualactionDButton">
-       <property name="geometry">
-        <rect>
-         <x>810</x>
-         <y>100</y>
-         <width>81</width>
-         <height>91</height>
-        </rect>
-       </property>
-       <property name="font">
-        <font>
-         <family>微软雅黑</family>
-         <pointsize>18</pointsize>
-        </font>
-       </property>
-       <property name="focusPolicy">
-        <enum>Qt::NoFocus</enum>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">QPushButton{background-color: rgba(84, 110, 122, 255);  border: 1px solid rgb(124, 124, 124); border-radius:5px;}
-QPushButton:pressed{background-color: rgba(38, 166, 154, 255);  border: 1px solid rgb(124, 124, 124); border-radius:5px;}</string>
-       </property>
-       <property name="text">
-        <string>搅拌</string>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_21">
-       <property name="geometry">
-        <rect>
-         <x>460</x>
-         <y>110</y>
-         <width>31</width>
-         <height>71</height>
-        </rect>
-       </property>
-       <property name="font">
-        <font>
-         <family>微软雅黑</family>
-         <pointsize>18</pointsize>
-        </font>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">background-color: rgba(255, 255, 255, 0);</string>
-       </property>
-       <property name="text">
-        <string>操
-作</string>
-       </property>
-      </widget>
-      <widget class="QLineEdit" name="timeEdit">
-       <property name="geometry">
-        <rect>
-         <x>240</x>
-         <y>100</y>
-         <width>151</width>
-         <height>41</height>
-        </rect>
-       </property>
-       <property name="font">
-        <font>
-         <family>微软雅黑</family>
-         <pointsize>18</pointsize>
-        </font>
-       </property>
-       <property name="focusPolicy">
-        <enum>Qt::ClickFocus</enum>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">border: 2px solid rgb(0, 77, 64);
+        </property>
+        <property name="text">
+         <string>计时</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="timeunitlabel">
+        <property name="geometry">
+         <rect>
+          <x>370</x>
+          <y>80</y>
+          <width>31</width>
+          <height>41</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <family>微软雅黑</family>
+          <pointsize>18</pointsize>
+         </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">background-color: rgba(255, 255, 255, 0);</string>
+        </property>
+        <property name="text">
+         <string>分</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_20">
+        <property name="geometry">
+         <rect>
+          <x>150</x>
+          <y>80</y>
+          <width>51</width>
+          <height>41</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <family>微软雅黑</family>
+          <pointsize>18</pointsize>
+         </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">background-color: rgba(255, 255, 255, 0);</string>
+        </property>
+        <property name="text">
+         <string>时间</string>
+        </property>
+       </widget>
+       <widget class="QLineEdit" name="timeEdit">
+        <property name="geometry">
+         <rect>
+          <x>210</x>
+          <y>80</y>
+          <width>151</width>
+          <height>41</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <family>微软雅黑</family>
+          <pointsize>18</pointsize>
+         </font>
+        </property>
+        <property name="focusPolicy">
+         <enum>Qt::ClickFocus</enum>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">border: 2px solid rgb(0, 77, 64);
 color: rgb(255, 255, 255);
 background-color: rgb(0, 150, 136);</string>
-       </property>
+        </property>
+       </widget>
+       <widget class="QLabel" name="manualtimelabel">
+        <property name="geometry">
+         <rect>
+          <x>210</x>
+          <y>130</y>
+          <width>151</width>
+          <height>41</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <family>微软雅黑</family>
+          <pointsize>18</pointsize>
+         </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">background-color: rgb(84, 110, 122);</string>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_30">
+        <property name="geometry">
+         <rect>
+          <x>170</x>
+          <y>30</y>
+          <width>101</width>
+          <height>31</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <family>微软雅黑</family>
+          <pointsize>18</pointsize>
+         </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">background-color: rgba(255, 255, 255, 0);</string>
+        </property>
+        <property name="text">
+         <string>定时器</string>
+        </property>
+       </widget>
       </widget>
-      <widget class="QLabel" name="timeunitlabel">
+      <widget class="QGroupBox" name="groupBox_4">
        <property name="geometry">
         <rect>
-         <x>400</x>
-         <y>100</y>
-         <width>51</width>
+         <x>470</x>
+         <y>90</y>
+         <width>411</width>
+         <height>201</height>
+        </rect>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QGroupBox {
+	background-color: rgba(255, 255, 255, 0);
+    border: 2px solid rgb(84, 110, 122);
+    border-radius: 5px;
+    margin-top: 1em;
+}
+</string>
+       </property>
+       <property name="title">
+        <string/>
+       </property>
+       <widget class="QPushButton" name="manualactionDButton">
+        <property name="geometry">
+         <rect>
+          <x>320</x>
+          <y>90</y>
+          <width>81</width>
+          <height>91</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <family>微软雅黑</family>
+          <pointsize>18</pointsize>
+         </font>
+        </property>
+        <property name="focusPolicy">
+         <enum>Qt::NoFocus</enum>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QPushButton{background-color: rgba(84, 110, 122, 255);  border: 1px solid rgb(124, 124, 124); border-radius:5px;}
+QPushButton:pressed{background-color: rgba(38, 166, 154, 255);  border: 1px solid rgb(124, 124, 124); border-radius:5px;}</string>
+        </property>
+        <property name="text">
+         <string>搅拌</string>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="manualactionAButton">
+        <property name="geometry">
+         <rect>
+          <x>20</x>
+          <y>90</y>
+          <width>81</width>
+          <height>91</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <family>微软雅黑</family>
+          <pointsize>18</pointsize>
+         </font>
+        </property>
+        <property name="focusPolicy">
+         <enum>Qt::NoFocus</enum>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QPushButton{background-color: rgba(84, 110, 122, 255);  border: 1px solid rgb(124, 124, 124); border-radius:5px;}
+QPushButton:pressed{background-color: rgba(38, 166, 154, 255);  border: 1px solid rgb(124, 124, 124); border-radius:5px;}</string>
+        </property>
+        <property name="text">
+         <string>加料</string>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="manualactionBButton">
+        <property name="geometry">
+         <rect>
+          <x>120</x>
+          <y>90</y>
+          <width>81</width>
+          <height>91</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <family>微软雅黑</family>
+          <pointsize>18</pointsize>
+         </font>
+        </property>
+        <property name="focusPolicy">
+         <enum>Qt::NoFocus</enum>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QPushButton{background-color: rgba(84, 110, 122, 255);  border: 1px solid rgb(124, 124, 124); border-radius:5px;}
+QPushButton:pressed{background-color: rgba(38, 166, 154, 255);  border: 1px solid rgb(124, 124, 124); border-radius:5px;}</string>
+        </property>
+        <property name="text">
+         <string>倒包</string>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="manualactionCButton">
+        <property name="geometry">
+         <rect>
+          <x>220</x>
+          <y>90</y>
+          <width>81</width>
+          <height>91</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <family>Sans</family>
+          <pointsize>18</pointsize>
+         </font>
+        </property>
+        <property name="focusPolicy">
+         <enum>Qt::NoFocus</enum>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QPushButton{background-color: rgba(84, 110, 122, 255);  border: 1px solid rgb(124, 124, 124); border-radius:5px;}
+QPushButton:pressed{background-color: rgba(38, 166, 154, 255);  border: 1px solid rgb(124, 124, 124); border-radius:5px;}</string>
+        </property>
+        <property name="text">
+         <string>捞渣</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_21">
+        <property name="geometry">
+         <rect>
+          <x>170</x>
+          <y>30</y>
+          <width>131</width>
+          <height>31</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <family>微软雅黑</family>
+          <pointsize>18</pointsize>
+         </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">background-color: rgba(255, 255, 255, 0);</string>
+        </property>
+        <property name="text">
+         <string>操作</string>
+        </property>
+       </widget>
+      </widget>
+      <widget class="QLabel" name="label_32">
+       <property name="geometry">
+        <rect>
+         <x>40</x>
+         <y>40</y>
+         <width>101</width>
          <height>41</height>
         </rect>
        </property>
@@ -615,14 +724,14 @@ background-color: rgb(0, 150, 136);</string>
         <string notr="true">background-color: rgba(255, 255, 255, 0);</string>
        </property>
        <property name="text">
-        <string>min</string>
+        <string>累计时间</string>
        </property>
       </widget>
-      <widget class="QLabel" name="manualtimelabel">
+      <widget class="QLabel" name="acctimelabel">
        <property name="geometry">
         <rect>
-         <x>240</x>
-         <y>150</y>
+         <x>160</x>
+         <y>40</y>
          <width>151</width>
          <height>41</height>
         </rect>
@@ -638,6 +747,58 @@ background-color: rgb(0, 150, 136);</string>
        </property>
        <property name="text">
         <string/>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="manualAddButton">
+       <property name="geometry">
+        <rect>
+         <x>625</x>
+         <y>315</y>
+         <width>51</width>
+         <height>51</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>微软雅黑</family>
+         <pointsize>18</pointsize>
+        </font>
+       </property>
+       <property name="focusPolicy">
+        <enum>Qt::NoFocus</enum>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QPushButton{background-color: rgba(84, 110, 122, 255);  border: 1px solid rgb(124, 124, 124); border-radius:5px;}
+QPushButton:pressed{background-color: rgba(38, 166, 154, 255);  border: 1px solid rgb(124, 124, 124); border-radius:5px;}</string>
+       </property>
+       <property name="text">
+        <string>+</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="manualMinusButton">
+       <property name="geometry">
+        <rect>
+         <x>700</x>
+         <y>315</y>
+         <width>51</width>
+         <height>51</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>微软雅黑</family>
+         <pointsize>18</pointsize>
+        </font>
+       </property>
+       <property name="focusPolicy">
+        <enum>Qt::NoFocus</enum>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QPushButton{background-color: rgba(84, 110, 122, 255);  border: 1px solid rgb(124, 124, 124); border-radius:5px;}
+QPushButton:pressed{background-color: rgba(38, 166, 154, 255);  border: 1px solid rgb(124, 124, 124); border-radius:5px;}</string>
+       </property>
+       <property name="text">
+        <string>-</string>
        </property>
       </widget>
      </widget>
@@ -1694,7 +1855,7 @@ color: rgb(255, 17, 17);</string>
         <x>30</x>
         <y>200</y>
         <width>921</width>
-        <height>381</height>
+        <height>411</height>
        </rect>
       </property>
       <property name="font">
@@ -1755,7 +1916,7 @@ QPushButton:pressed{background-color: rgba(0, 77, 64,  255);  border: 1px solid 
         <rect>
          <x>200</x>
          <y>50</y>
-         <width>281</width>
+         <width>301</width>
          <height>241</height>
         </rect>
        </property>
@@ -1837,8 +1998,8 @@ color: rgb(255, 255, 255);</string>
       <widget class="QLabel" name="powerSliderLabel_2">
        <property name="geometry">
         <rect>
-         <x>750</x>
-         <y>310</y>
+         <x>770</x>
+         <y>320</y>
          <width>121</width>
          <height>41</height>
         </rect>
@@ -1862,10 +2023,10 @@ background-color: rgb(84, 110, 122);
       <widget class="QSlider" name="powerSlider_2">
        <property name="geometry">
         <rect>
-         <x>150</x>
+         <x>230</x>
          <y>310</y>
-         <width>581</width>
-         <height>41</height>
+         <width>451</width>
+         <height>61</height>
         </rect>
        </property>
        <property name="focusPolicy">
@@ -1884,7 +2045,7 @@ QSlider::handle:horizontal {
 background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #b4b4b4, stop:1 #8f8f8f); 
 border: 1px solid #5c5c5c; 
 width: 30px; 
-margin: -8px 0px; 
+margin: -18px 0px; 
 } </string>
        </property>
        <property name="orientation">
@@ -1894,8 +2055,8 @@ margin: -8px 0px;
       <widget class="QLabel" name="label_18">
        <property name="geometry">
         <rect>
-         <x>40</x>
-         <y>310</y>
+         <x>60</x>
+         <y>320</y>
          <width>101</width>
          <height>41</height>
         </rect>

@@ -22,6 +22,7 @@ protected:
 private slots:
     void timeOut();
     void actionRecord();
+    void actionRecord(QString content);
 
 public:
     QTimer *timer;

@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/new/png">
+        <file>wifi.png</file>
+        <file>wifi_off.png</file>
+        <file>checkbox.png</file>
+        <file>checkbox_marked.png</file>
+    </qresource>
+</RCC>

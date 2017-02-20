@@ -34,12 +34,16 @@ HEADERS += const_define.h mainwindow.h \
     frminput.h \
     errorpage.h \
     filecopyer.h \
-    firmware.h
+    firmware.h \
+    rfreader.h \
+    mwrf.h \
+    adddialog.h
 FORMS += mainwindow.ui \
     cusdialog.ui \
     actiondialog.ui \
     frminput.ui \
-    errorpage.ui
+    errorpage.ui \
+    adddialog.ui
 SOURCES += main.cpp mainwindow.cpp \
     cusdialog.cpp \
     actiondialog.cpp \
@@ -53,11 +57,19 @@ SOURCES += main.cpp mainwindow.cpp \
     frminput.cpp \
     errorpage.cpp \
     filecopyer.cpp \
-    firmware.cpp
-
-unix:!macx: LIBS += -L$$PWD/ -ljsoncpp -lserial
+    firmware.cpp \
+    rfreader.cpp \
+    adddialog.cpp
 
 INCLUDEPATH += $$PWD/
 DEPENDPATH += $$PWD/
 
-unix:!macx: PRE_TARGETDEPS += $$PWD/libjsoncpp.a
+unix:!macx: LIBS += -lmwrf
+unix:!macx: LIBS += -L$$PWD/ -ljsoncpp
+unix:!macx: LIBS += -lserial
+
+RESOURCES += \
+    res.qrc
+
+
+

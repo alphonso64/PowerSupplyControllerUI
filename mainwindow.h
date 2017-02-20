@@ -14,12 +14,14 @@
 #include "serialworker.h"
 #include "errorpage.h"
 #include "filecopyer.h"
+#include "rfreader.h"
 #include <QNetworkAccessManager>
 #include <QNetworkRequest>
 #include <QNetworkReply>
 #include <QHttpMultiPart>
 #include <QHttpPart>
 #include <QMutex>
+#include "adddialog.h"
 #if _MSC_VER >= 1600
 #pragma execution_character_set("utf-8")
 #endif
@@ -43,6 +45,7 @@ private slots:
     void autoStartClick();
     void recordStartClick(bool);
     void timerOut();
+    void acctimerOut();
     void display();
     void fileOpen();
     void fileParsed();
@@ -61,6 +64,8 @@ private slots:
     void fileUpload();
     void netfinished();
     void fileUploadfinished();
+    void manualAdd();
+    void manualMinus();
 
 private:
     void uiInit();
@@ -68,16 +73,19 @@ private:
 
 signals:
     void recordStatus();
+    void recordStatus(QString content);
 
 private:
     Ui::MainWindow *ui;
     QButtonGroup *group_manual;
     QTime time;
+    QTime acctime;
     QTime autotime;
     QTimer *timer;
     QTimer *displaytimer;
     QTimer *autotimer;
     QTimer *nettimer;
+    QTimer *acctimer;
 
     QNetworkAccessManager *nam;
 
@@ -93,6 +101,7 @@ private:
     ParseWorker *parser;
     SerialWorker *serialWorker;
     FileCopyer *copyer;
+    RFReader *rfreader;
 
     AutoState autostate;
     ErrorPage *errorPage;
