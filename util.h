@@ -3,6 +3,8 @@
 #include <QStringList>
 #include <stdio.h>
 #include "serial/serial.h"
+#include <QMap>
+#include "json/json.h"
 using std::vector;
 class Util
 {
@@ -20,6 +22,7 @@ public:
     static QString checkFirmWareUpdatePath(QString udiskPath);
 	static QString checkFirmWareUpdatePath_(QString udiskPath);
 	static void deleteUnpluedUdiskPath();
+    static QMap<QString,QString> parseFileList(QString val);
 
 };
 

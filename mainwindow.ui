@@ -2270,8 +2270,8 @@ QPushButton:pressed{background-color: rgba(0, 77, 64,  255);  border: 1px solid 
      <widget class="QPushButton" name="fileUploadButton">
       <property name="geometry">
        <rect>
-        <x>770</x>
-        <y>150</y>
+        <x>620</x>
+        <y>270</y>
         <width>111</width>
         <height>71</height>
        </rect>
@@ -2291,6 +2291,32 @@ QPushButton:pressed{background-color: rgba(0, 77, 64,  255);  border: 1px solid 
       </property>
       <property name="text">
        <string>工艺文件上传</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="fileDownloadButton">
+      <property name="geometry">
+       <rect>
+        <x>770</x>
+        <y>270</y>
+        <width>111</width>
+        <height>71</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Sans</family>
+        <pointsize>12</pointsize>
+       </font>
+      </property>
+      <property name="focusPolicy">
+       <enum>Qt::NoFocus</enum>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QPushButton{background-color: rgba(38, 166, 154,  255);  border: 1px solid rgb(124, 124, 124); border-radius:5px;}
+QPushButton:pressed{background-color: rgba(0, 77, 64,  255);  border: 1px solid rgb(124, 124, 124); border-radius:5px;}</string>
+      </property>
+      <property name="text">
+       <string>工艺文件下载</string>
       </property>
      </widget>
     </widget>

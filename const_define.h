@@ -32,8 +32,13 @@
 #define ActionDControl_TEXT "搅拌"
 
 #define UPLOAD_FILE_STATE_PROCESSING "正在上传"
+#define DOWN_FILE_LIST_PROCESSING "正在获取列表"
 #define UPLOAD_FILE_STATE_SUCCESS "上传成功"
 #define UPLOAD_FILE_STATE_FAIL "上传失败"
+#define DOWN_FILE_STATE_SUCCESS "下载成功"
+#define DOWN_FILE_STATE_FAIL "下载失败"
+#define UPLOAD_FILE_PROCESSING  "正在下载文件"
+#define DOWN_FILE_LIST_FAIL "获取列表失败"
 
 #define File_Saved_TEXT "文件已保存"
 

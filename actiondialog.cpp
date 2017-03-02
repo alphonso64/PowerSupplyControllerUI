@@ -4,15 +4,13 @@
 #include "util.h"
 #include <QDebug>
 #include "const_define.h"
+#include <QMapIterator>
 ActionDialog::ActionDialog(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::ActionDialog)
 {
     ui->setupUi(this);
-    QStringListModel *model = new QStringListModel(this);
-    model->setStringList( Util::getLocalFileList());
-    ui->listView->setModel(model);
-    ui->listView->setEditTriggers(QAbstractItemView::NoEditTriggers);
+
 
     this->setWindowFlags(Qt::Tool | Qt::WindowStaysOnTopHint |Qt::X11BypassWindowManagerHint);
     this->move(192,144);
@@ -21,6 +19,27 @@ ActionDialog::ActionDialog(QWidget *parent) :
 
     connect(ui->doneButton, SIGNAL(clicked()),this, SLOT(doneExit()));
     connect(ui->rejectButton, SIGNAL(clicked()),this, SLOT(rejectExit()));
+}
+
+void ActionDialog::setStyle(int style)
+{
+    if(style == 0)
+    {
+        QStringListModel *model = new QStringListModel(this);
+        model->setStringList( Util::getLocalFileList());
+        ui->listView->setModel(model);
+        ui->listView->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    }else{
+        QMapIterator<QString, QString> i(list);
+        QStringList stringList;
+        while (i.hasNext()) {
+          stringList.append(i.next().key());
+        }
+        QStringListModel *model = new QStringListModel(this);
+        model->setStringList( stringList);
+        ui->listView->setModel(model);
+        ui->listView->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    }
 }
 
 void ActionDialog::rejectExit()
@@ -41,7 +60,6 @@ void ActionDialog::doneExit()
         filePath = "";
     }
     done(0);
-
 }
 
 ActionDialog::~ActionDialog()

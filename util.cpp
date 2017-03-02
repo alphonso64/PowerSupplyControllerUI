@@ -50,6 +50,29 @@ QStringList Util::getLocalFileList()
     return filelist;
 }
 
+QMap<QString,QString> Util::parseFileList(QString val)
+{
+
+    QMap<QString,QString> res;
+    Json::Reader reader;
+    Json::Value value;
+    if (reader.parse(val.toStdString(), value, false))
+    {
+        std::string aa = value["return_code"].asString();
+        if(aa.compare("success") == 0)
+        {
+            Json::Value array = value["data"];
+            for(int i=0;i<array.size();i++)
+            {
+                Json::Value content = array[i];
+                res.insert(QString::fromStdString(content["name"].asString()),QString::fromStdString(content["path"].asString()));\
+            }
+        }
+    }
+
+    return res;
+}
+
 QString Util::readFile(QString path)
 {
     QFile f(path);

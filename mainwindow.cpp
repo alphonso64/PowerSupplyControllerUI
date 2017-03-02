@@ -57,7 +57,7 @@ MainWindow::MainWindow(QWidget *parent) :
     acctimer = new QTimer();
     acctimer->setInterval(1000);
 
-    ui->fileUploadButton->setVisible(false);
+   // ui->fileUploadButton->setVisible(false);
     ui->autoStartButton->setEnabled(false);
 
     nam = new QNetworkAccessManager(this);
@@ -94,6 +94,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->softUpdateButton, SIGNAL(clicked()), this, SLOT(softUpdateButtonClick()));
     connect(ui->restartButton, SIGNAL(clicked()), this, SLOT(restartButtonClick()));
     connect(ui->fileUploadButton, SIGNAL(clicked()), this, SLOT(fileUpload()));
+    connect(ui->fileDownloadButton, SIGNAL(clicked()), this, SLOT(fileDownload()));
     connect(ui->firmwareUpdateButton, SIGNAL(clicked()), this, SLOT(firmwarepdateButtonClick()));
     connect(ui->manualAddButton, SIGNAL(clicked()), this, SLOT(manualAdd()));
     connect(ui->manualMinusButton, SIGNAL(clicked()), this, SLOT(manualMinus()));
@@ -147,6 +148,7 @@ void MainWindow::fileUploadfinished()
 void MainWindow::fileUpload()
 {
     ActionDialog actionDialog;
+    actionDialog.setStyle(0);
     if(0 == actionDialog.exec())
     {
         QHttpMultiPart *multiPart = new QHttpMultiPart(QHttpMultiPart::FormDataType);
@@ -179,6 +181,72 @@ void MainWindow::fileUpload()
     }
 }
 
+void MainWindow::fileDownload()
+{
+    QUrl url("http://192.168.3.21:8089/PowerMonitor/rest/api/getFileList");
+    QNetworkRequest request(url);
+    mutex.lock();
+    file_reply = nam->post(request,QByteArray(0));
+    mutex.unlock();
+    connect(file_reply, SIGNAL(finished()), this, SLOT(fileListDownloadinished()));
+    fileupload_CusDialog = new CusDialog(DOWN_FILE_LIST_PROCESSING,3);
+    fileupload_CusDialog->exec();
+}
+
+void MainWindow::fileListDownloadinished()
+{
+    if (file_reply->error() == QNetworkReply::NoError)
+    {
+        fileupload_CusDialog->done(1);
+        QByteArray res = file_reply->readAll();
+        QMap<QString,QString> fileList = Util::parseFileList(res);
+        ActionDialog dialog;
+        dialog.list = fileList;
+        dialog.setStyle(1);
+        if(0 == dialog.exec())
+        {
+            qDebug()<<fileList[dialog.fileName];
+            QString url_pre("http://192.168.3.21:8089/PowerMonitor/rest/api/reqFile?path=");
+            url_pre.append(fileList[dialog.fileName]);
+            downFileName = dialog.fileName;
+            QUrl url(url_pre);
+            QNetworkRequest request(url);
+            mutex.lock();
+            file_down_reply = nam->get(request);
+            mutex.unlock();
+            connect(file_down_reply, SIGNAL(finished()), this, SLOT(fileDownloadinished()));
+            fileupload_CusDialog = new CusDialog(UPLOAD_FILE_PROCESSING,3);
+            fileupload_CusDialog->exec();
+
+        }
+    }
+    else
+    {
+        fileupload_CusDialog->changeStyle(DOWN_FILE_LIST_FAIL,1);
+    }
+    file_reply->deleteLater();
+}
+
+void MainWindow::fileDownloadinished()
+{
+    if (file_down_reply->error() == QNetworkReply::NoError)
+    {
+        QFile data(PrePath+downFileName);
+        if (data.open(QFile::WriteOnly | QIODevice::Truncate)) {
+            QTextStream out(&data);
+            out << file_down_reply->readAll();
+        }
+        fileupload_CusDialog->changeStyle(DOWN_FILE_STATE_SUCCESS,1);
+    }
+    else
+    {
+        fileupload_CusDialog->changeStyle(DOWN_FILE_STATE_FAIL,1);
+    }
+    file_down_reply->deleteLater();
+}
+
+
+
 void MainWindow::netfinished()
 {
     if (state_reply->error() == QNetworkReply::NoError)
@@ -205,30 +273,29 @@ void MainWindow::netfinished()
 
 void MainWindow::stateUpload()
 {
-//    if(!netStartFlag){
-//        netStartFlag = true;
-//        qDebug()<<"stateUpload";
-//        Json::FastWriter writer;
-//        Json::Value status;
-//        status["temp_a"] = QString::number(dpuStatus.temp_a).toStdString();
-//        status["temp_b"] = QString::number(dpuStatus.temp_b).toStdString();
-//        status["ua"] = QString::number(dpuStatus.ua).toStdString();
-//        status["ia"] = QString::number(dpuStatus.ia).toStdString();
-//        status["power"] = QString::number(dpuStatus.power).toStdString();
-//        status["errorcode"] = QString::number(dpuStatus.errorcode).toStdString();
-//        status["powerlevel"] = QString::number(pcStatus.powerlevel).toStdString();
-//        std::string json_file = writer.write(status);
+    if(!netStartFlag){
+        netStartFlag = true;
+        qDebug()<<"stateUpload";
+        Json::FastWriter writer;
+        Json::Value status;
+        status["temp_a"] = QString::number(dpuStatus.temp_a).toStdString();
+        status["temp_b"] = QString::number(dpuStatus.temp_b).toStdString();
+        status["ua"] = QString::number(dpuStatus.ua).toStdString();
+        status["ia"] = QString::number(dpuStatus.ia).toStdString();
+        status["power"] = QString::number(dpuStatus.power).toStdString();
+        status["errorcode"] = QString::number(dpuStatus.errorcode).toStdString();
+        status["powerlevel"] = QString::number(pcStatus.powerlevel).toStdString();
+        std::string json_file = writer.write(status);
 
-//        QUrl url("http://10.18.1.24:8080/PowerMonitor/rest/api/uploadStatus");
-//        QByteArray array(json_file.c_str());
-//        QNetworkRequest request(url);
-//        request.setHeader(QNetworkRequest::ContentTypeHeader,QVariant("application/json"));
-//        mutex.lock();
-//        state_reply = nam->post(request,array);
-//        mutex.unlock();
-//        connect(state_reply, SIGNAL(finished()), this, SLOT(netfinished()));
-
-//    }
+        QUrl url("http://10.18.1.24:8080/PowerMonitor/rest/api/uploadStatus");
+        QByteArray array(json_file.c_str());
+        QNetworkRequest request(url);
+        request.setHeader(QNetworkRequest::ContentTypeHeader,QVariant("application/json"));
+        mutex.lock();
+        state_reply = nam->post(request,array);
+        mutex.unlock();
+        connect(state_reply, SIGNAL(finished()), this, SLOT(netfinished()));
+    }
 }
 
 void MainWindow::fileRecorded()
@@ -620,6 +687,8 @@ void MainWindow::fileParsed()
         int acion = state.actionID;
         if(acion == ActionAControl){
             temp.append(ActionAControl_TEXT);
+            temp.append(" ");
+            temp.append(state.content);
         }else if(acion == ActionBControl){
             temp.append(ActionBControl_TEXT);
         }else if(acion == ActionCControl){
@@ -753,6 +822,7 @@ void MainWindow::autoProcess()
 void MainWindow::fileOpen()
 {
     ActionDialog actionDialog;
+    actionDialog.setStyle(0);
     if(0 == actionDialog.exec())
     {
         ui->fileNameText->setText(actionDialog.fileName);

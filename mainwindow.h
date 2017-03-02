@@ -62,8 +62,11 @@ private slots:
     void firmwarepdateButtonClick();
     void stateUpload();
     void fileUpload();
+    void fileDownload();
     void netfinished();
     void fileUploadfinished();
+    void fileListDownloadinished();
+    void fileDownloadinished();
     void manualAdd();
     void manualMinus();
 
@@ -113,6 +116,8 @@ private:
 
     QNetworkReply *state_reply;
     QNetworkReply *file_reply;
+    QNetworkReply *file_down_reply;
+    QString downFileName;
     QMutex mutex;
 
     static const int setBtnID = 1;
